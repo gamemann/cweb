@@ -1,0 +1,6 @@
+{
+    "log_lvl": 7,
+    "log_file": "/var/log/cweb.log",
+    "bind_addr": "0.0.0.0",
+    "bind_port": 80
+}
