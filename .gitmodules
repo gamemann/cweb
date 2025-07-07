@@ -1,0 +1,6 @@
+[submodule "modules/json-c"]
+	path = modules/json-c
+	url = https://github.com/json-c/json-c
+[submodule "modules/facil.io"]
+	path = modules/facil.io
+	url = https://github.com/boazsegev/facil.io.git
