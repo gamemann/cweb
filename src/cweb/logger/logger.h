@@ -5,7 +5,7 @@
 #include <utils/constants.h>
 #include <utils/int_types.h>
 
-#include <config/config.h>
+#include <cweb/config/config.h>
 
 #include <stdio.h>
 #include <stdlib.h>

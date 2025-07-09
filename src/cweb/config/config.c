@@ -1,6 +1,6 @@
 #include "config.h"
 
-#include <logger/logger.h>
+#include <cweb/logger/logger.h>
 
 void cfg__defaults(config_t* cfg) {
     strncpy(cfg->bind_addr, "127.0.0.1", sizeof(cfg->bind_addr));

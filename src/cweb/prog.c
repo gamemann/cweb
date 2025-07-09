@@ -3,13 +3,13 @@
 
 #include <config.h>
 
-#include <cli/cli.h>
-#include <config/config.h>
-#include <logger/logger.h>
-#include <server/server.h>
-
 #include <utils/constants.h>
 #include <utils/int_types.h>
+
+#include <cweb/cli/cli.h>
+#include <cweb/config/config.h>
+#include <cweb/logger/logger.h>
+#include <cweb/server/server.h>
 
 int main(int argc, char** argv) {
     int ret;
