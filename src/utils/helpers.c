@@ -22,7 +22,7 @@ char** utils__str_split(char* str, const char delim) {
 
     cnt += last < (str + strlen(str) - 1) + 1;
 
-    res = malloc(sizeof(char*) * cnt);
+    res = malloc(sizeof(char*) * (cnt + 1));
 
     if (!res)
         return res;
@@ -30,14 +30,12 @@ char** utils__str_split(char* str, const char delim) {
     size_t idx = 0;
     char *token = strtok(str, f_delim);
 
-    while (token) {
-        if (idx > cnt)
-            break;
-
-        *(res + idx++) = strdup(token);
-
-        *(res + idx) = NULL;
+    while (token && idx < cnt) {
+        res[idx++] = strdup(token);
+        token = strtok(NULL, f_delim);
     }
+
+    res[idx] = NULL;
 
     return res;
 }
