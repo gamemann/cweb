@@ -5,3 +5,4 @@
 #include <string.h>
 
 char** utils__str_split(char* str, const char delim);
+int utils__get_delim_cnt(char* str, const char delim);

@@ -41,3 +41,18 @@ char** utils__str_split(char* str, const char delim) {
 
     return res;
 }
+
+int utils__get_delim_cnt(char* str, const char delim) {
+    int cnt = 0;
+
+    char *tmp = str;
+
+    while (*tmp) {
+        if (*tmp == delim)
+            cnt++;
+
+        tmp++;
+    }
+
+    return cnt;
+}
