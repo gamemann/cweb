@@ -4,6 +4,7 @@
 
 #include <utils/constants.h>
 #include <utils/int_types.h>
+#include <utils/helpers.h>
 
 #include <cweb/ctx/ctx.h>
 
@@ -19,6 +20,7 @@ struct http_header {
 struct http_request {
     char method[MAX_NAME_LEN];
     char path[MAX_FILE_LEN];
+    char version[MAX_NAME_LEN];
 
     http_header_t headers[MAX_HEADERS];
     int headers_cnt;
