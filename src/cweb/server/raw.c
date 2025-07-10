@@ -128,6 +128,10 @@ int server__setup_raw(ctx_t* ctx) {
 
         char *res_full = http__response_write(&res);
 
+        // Cleanup both request and response headers now since they're not needed.
+        http__header_cleanup(req.headers, req.headers_cnt);
+        http__header_cleanup(res.headers, res.headers_cnt);
+
         // Free body buffer.
         if (res_body) {
             free(res_body);
