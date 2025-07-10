@@ -109,6 +109,94 @@ int server__setup_raw(ctx_t* ctx) {
         http_response_t res = {0};
         strcpy(res.version, "HTTP/1.1");
 
+        // Check allowed hosts.
+        if (ctx->cfg->allowed_hosts_cnt > 0) {
+            const char *host_full = http__header_get(req.headers, req.headers_cnt, "Host");
+
+            if (!host_full) {
+                res.code = 403;
+                strcpy(res.msg, "Forbidden");
+
+                logger__log(ctx->cfg, LVL_NOTICE, "[ALLOWED_HOSTS] Failed to retrieve 'Host' header.");
+
+                goto skip_body;
+            }
+
+            // We need to split the host by colon. So let's clone the host full and retrieve that.
+            char *host_full_cpy = strdup(host_full);
+
+            if (!host_full_cpy) {
+                res.code = 403;
+                strcpy(res.msg, "Forbidden");
+
+                logger__log(ctx->cfg, LVL_NOTICE, "[ALLOWED_HOSTS] Failed to copy host full.");
+
+                goto skip_body;
+            }
+
+            // Split by colon (<host>:<port>).
+            // To Do: Should we check if a colon exists? If a colon doesn't exist, host below will return full string regardless.
+            char *saved_ptr;
+            char *host = strtok_r(host_full_cpy, ":", &saved_ptr);
+
+            int allowed = 0;
+            char *t;
+
+            for (int i = 0; i < ctx->cfg->allowed_hosts_cnt; i++) {
+                t = ctx->cfg->allowed_hosts[i];
+
+                if (strcmp(host, t) == 0) {
+                    allowed = 1;
+
+                    break;
+                }
+            }
+
+            // Free host full copy.
+            free(host_full_cpy);
+
+            if (!allowed) {
+                res.code = 403;
+                strcpy(res.msg, "Forbidden");
+
+                logger__log(ctx->cfg, LVL_NOTICE, "[ALLOWED_HOSTS] Host not allowed.");
+
+                goto skip_body;
+            }
+        }
+
+        // Check allowed user agents.
+        if (ctx->cfg->allowed_user_agents_cnt > 0) {
+            const char *ua = http__header_get(req.headers, req.headers_cnt, "User-Agent");
+
+            if (!ua) {
+                res.code = 403;
+                strcpy(res.msg, "Forbidden");
+
+                goto skip_body;
+            }
+
+            int allowed = 0;
+            char *t;
+
+            for (int i = 0; i < ctx->cfg->allowed_user_agents_cnt; i++) {
+                t = ctx->cfg->allowed_user_agents[i];
+
+                if (strcmp(ua, t) == 0) {
+                    allowed = 1;
+
+                    break;
+                }
+            }
+
+            if (!allowed) {
+                res.code = 403;
+                strcpy(res.msg, "Forbidden");
+
+                goto skip_body;
+            }
+        }
+
         // Retrieve HTML contents for body.
         char *res_body = fs__web_get_html(req.path, ctx->cfg->public_dir);
 
@@ -127,6 +215,8 @@ int server__setup_raw(ctx_t* ctx) {
         }
 
         res.body = res_body;
+
+skip_body:
 
         // Set some headers.
         http__header_add(res.headers, &res.headers_cnt, "Server", ctx->cfg->server_name);

@@ -24,6 +24,12 @@ struct config {
 
     char server_name[MAX_NAME_LEN];
     char public_dir[MAX_FILE_LEN];
+
+    char allowed_hosts[MAX_ALLOWED_HOSTS][MAX_IP_LEN];
+    int allowed_hosts_cnt;
+
+    char allowed_user_agents[MAX_ALLOWED_USER_AGENTS][255];
+    int allowed_user_agents_cnt;
 } typedef config_t;
 
 struct config_overrides {

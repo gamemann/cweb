@@ -8,7 +8,7 @@
  * 
  * @return The return of http__header_parse_raw().
  */
-int http__response_header_parse(http_response_t* res, const char* line) {
+int http__response_header_parse(http_response_t* res, char* line) {
     return http__header_parse_raw(res->headers, &res->headers_cnt, line);
 }
 

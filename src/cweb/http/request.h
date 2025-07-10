@@ -24,6 +24,6 @@ struct http_request {
 } typedef http_request_t;
 
 int http__request_parse_info(http_request_t* req, char* line);
-int http__request_header_parse(http_request_t* req, const char* line);
-int http__request_parse(ctx_t* ctx, http_request_t* req, const char* buffer);
+int http__request_header_parse(http_request_t* req, char* line);
+int http__request_parse(ctx_t* ctx, http_request_t* req, char* buffer);
 char* http__request_write(http_request_t* req);

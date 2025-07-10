@@ -6,24 +6,35 @@
  * @param req A pointer to the HTTP request.
  * @param line The line to parse.
  * 
- * @return 0 on success, 1 on error due to incorrect space count, 2 on error with splitting by spaces, 3 on error parsing.
+ * @return 0 on success. 1 on line copy fail. 2 on error due to incorrect space count. 3 on error with splitting by spaces. 4 on error parsing.
  */
 int http__request_parse_info(http_request_t* req, char* line) {
-    // Make sure we have enough spaces.
-    int space_cnt = utils__get_delim_cnt(line, ' ');
+    char *line_cpy = strdup(line);
 
-    if (space_cnt < 2)
+    if (!line_cpy)
         return 1;
 
-    // Split string by spaces.
-    char **tokens = utils__str_split(line, ' ');
+    // Make sure we have enough spaces.
+    int space_cnt = utils__get_delim_cnt(line_cpy, ' ');
 
-    if (!tokens)
+    if (space_cnt < 2)
         return 2;
 
-    // Make sure we have at least 3 strings to use.
-    if (*(tokens) == NULL || *(tokens + 1) == NULL || *(tokens + 2) == NULL)
+    // Split string by spaces.
+    char **tokens = utils__str_split(line_cpy, ' ');
+
+    if (!tokens) {
+        free(line_cpy);
+
         return 3;
+    }
+
+    // Make sure we have at least 3 strings to use.
+    if (*(tokens) == NULL || *(tokens + 1) == NULL || *(tokens + 2) == NULL) {
+        free(line_cpy);
+
+        return 4;
+    }
 
     // Assign method.
     strncpy(req->method, *(tokens), sizeof(req->method) - 1);
@@ -44,6 +55,8 @@ int http__request_parse_info(http_request_t* req, char* line) {
 
     free(tokens);
 
+    free(line_cpy);
+
     return 0;
 }
 
@@ -55,7 +68,7 @@ int http__request_parse_info(http_request_t* req, char* line) {
  * 
  * @return 0 on success or code from http__header_parse_raw().
  */
-int http__request_header_parse(http_request_t* req, const char* line) {
+int http__request_header_parse(http_request_t* req, char* line) {
     return http__header_parse_raw(req->headers, &req->headers_cnt, line);
 }
 
@@ -68,7 +81,7 @@ int http__request_header_parse(http_request_t* req, const char* line) {
  * 
  * @return 0 on success. 2 or 3 on malformed HTTP request. 4 on malformed HTTP header.
  */
-int http__request_parse(ctx_t* ctx, http_request_t* req, const char* buffer) {
+int http__request_parse(ctx_t* ctx, http_request_t* req, char* buffer) {
     int ret = 0;
 
     // Copy buffer (needed for strtok()).
@@ -96,10 +109,11 @@ int http__request_parse(ctx_t* ctx, http_request_t* req, const char* buffer) {
     char *body = headers_end + 4;
 
     // Split headers by new line.
-    char *line = strtok(buffer_cpy, "\r\n");
+    char *save_ptr;
+    char *line = strtok_r(buffer_cpy, "\r\n", &save_ptr);
     int line_num = 1;
-
-    while (line != NULL) {
+    
+    while (line != NULL) {        
         // The first line includes information on request (method, path, and HTTP version).
         if (line_num == 1) {
             if ((ret = http__request_parse_info(req, line)) != 0) {
@@ -122,7 +136,7 @@ int http__request_parse(ctx_t* ctx, http_request_t* req, const char* buffer) {
             }
         }
 
-        line = strtok(NULL, "\r\n");
+        line = strtok_r(NULL, "\r\n", &save_ptr);
         line_num++;
     }
 

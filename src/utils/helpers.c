@@ -28,7 +28,8 @@ char** utils__str_split(char* str, const char delim) {
         tmp++;
     }
 
-    cnt += last < (str + strlen(str) - 1) + 1;
+    if (str[0] != '\0')
+        cnt++;
 
     res = malloc(sizeof(char*) * (cnt + 1));
 
@@ -36,11 +37,13 @@ char** utils__str_split(char* str, const char delim) {
         return res;
 
     size_t idx = 0;
-    char *token = strtok(str, f_delim);
+
+    char *save_ptr;
+    char *token = strtok_r(str, f_delim, &save_ptr);
 
     while (token && idx < cnt) {
         res[idx++] = strdup(token);
-        token = strtok(NULL, f_delim);
+        token = strtok_r(NULL, f_delim, &save_ptr);
     }
 
     res[idx] = NULL;
@@ -129,4 +132,26 @@ int utils__file_exists(const char* path) {
     }
 
     return 0;
+}
+
+char* utils__trim(char *str) {
+    if (!str)
+        return NULL;
+
+    while (isspace((unsigned char)*str)) {
+        str++;
+    }
+
+    if (*str == '\0')
+        return str;
+
+    char *end = str + strlen(str) - 1;
+
+    while (end > str && isspace((unsigned char)*end)) {
+        end--;
+    }
+
+    *(end + 1) = '\0';
+
+    return str;
 }

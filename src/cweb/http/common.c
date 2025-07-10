@@ -7,7 +7,7 @@
  * 
  * @return 1 on yes or 0 on no.
  */
-int http__is_header(const char* line) {
+int http__is_header(char* line) {
     return strstr(line, ":") != NULL;
 }
 
@@ -23,14 +23,11 @@ int http__is_header(const char* line) {
 const char* http__header_get(http_header_t* headers, int header_cnt, const char* name) {
     for (int i = 0; i < header_cnt; i++) {
         http_header_t *header = &headers[i];
-
-        if (!header)
-            break;
-
+        
         if (strcmp(header->name, name) != 0)
             continue;
 
-        return header->value;
+        return utils__trim(header->value);
     }
 
     return NULL;
@@ -71,14 +68,15 @@ int http__header_add(http_header_t* headers, int* header_cnt, const char* name, 
  * 
  * @return 0 on success, 1 on line_cpy error, or 2 when colon doesn't exist in line. Otherwise, return value of http__header_add().
  */
-int http__header_parse_raw(http_header_t* headers, int* header_cnt, const char* line) {
+int http__header_parse_raw(http_header_t* headers, int* header_cnt, char* line) {
     // We need to make another copy.
     char *line_cpy = strdup(line);
 
     if (!line_cpy)
         return 1;
 
-    char *ptr = strtok(line_cpy, ":");
+    char *save_ptr;
+    char *ptr = strtok_r(line_cpy, ":", &save_ptr);
 
     // Make sure a colon exists.
     if (ptr == NULL)
@@ -89,7 +87,7 @@ int http__header_parse_raw(http_header_t* headers, int* header_cnt, const char* 
     strncpy(name, ptr, sizeof(name) - 1);
     name[sizeof(name) - 1] = '\0';
 
-    ptr = strtok(NULL, ":");
+    ptr = strtok_r(NULL, ":", &save_ptr);
 
     // Retrieve header value.
     char value[4096];

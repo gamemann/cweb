@@ -23,5 +23,5 @@ struct http_response {
     char* body;
 } typedef http_response_t;
 
-int http__response_header_parse(http_response_t* res, const char* line);
+int http__response_header_parse(http_response_t* res, char* line);
 char* http__response_write(http_response_t* res);
