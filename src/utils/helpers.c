@@ -65,17 +65,25 @@ int utils__read_file(const char* path, char** buffer) {
     ssize_t file_sz = ftell(fp);
     rewind(fp);
 
-    if (file_sz <= 0)
+    if (file_sz <= 0) {
+        fclose(fp);
+
         return 2;
+    }
 
     *buffer = malloc(file_sz + 1);
 
-    if (*buffer == NULL)
+    if (*buffer == NULL) {
+        fclose(fp);
+
         return 3;
+    }
 
     size_t r = fread(*buffer, 1, file_sz, fp);
 
     (*buffer)[r] = '\0';
+
+    fclose(fp);
 
     return 0;
 }
