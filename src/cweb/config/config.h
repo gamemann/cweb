@@ -20,6 +20,9 @@ struct config {
 
     char bind_addr[MAX_IP_LEN];
     int bind_port;
+
+    char server_name[MAX_NAME_LEN];
+    char public_dir[MAX_FILE_LEN];
 } typedef config_t;
 
 struct config_overrides {

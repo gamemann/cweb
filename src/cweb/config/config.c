@@ -8,6 +8,10 @@ void cfg__defaults(config_t* cfg) {
 
     cfg->log_lvl = LVL_NOTICE;
     strncpy(cfg->log_file, "/var/log/cweb.log", sizeof(cfg->log_file));
+
+    strncpy(cfg->server_name, "CWeb", sizeof(cfg->server_name));
+
+    strncpy(cfg->public_dir, "./public", sizeof(cfg->public_dir));
 }
 
 int cfg__load(config_t* cfg, const char* cfg_path, int load_defaults) {
@@ -99,11 +103,23 @@ int cfg__parse(config_t* cfg, const char* data) {
     if (bind_addr)
         strncpy(cfg->bind_addr, json_object_get_string(bind_addr), sizeof(cfg->log_file));
 
-    // Retrieve b ind port.
+    // Retrieve bind port.
     json_object *bind_port = json_object_object_get(root, "bind_port");
 
     if (bind_port)
         cfg->bind_port = (u16)json_object_get_int(bind_port);
+
+    // Retrieve server name.
+    json_object *server_name = json_object_object_get(root, "server_name");
+
+    if (server_name)
+        strncpy(cfg->server_name, json_object_get_string(server_name), sizeof(cfg->server_name));
+
+    // Retrieve public HTML directory.
+    json_object *public_dir = json_object_object_get(root, "public_dir");
+
+    if (public_dir)
+        strncpy(cfg->public_dir, json_object_get_string(public_dir), sizeof(cfg->public_dir));
 
     return 0;
 }
@@ -130,4 +146,10 @@ void cfg__print(config_t* cfg) {
 
     // Bind port.
     printf("Bind Port: %d\n", cfg->bind_port);
+
+    // Server name.
+    printf("Server Name: %s\n", cfg->server_name);
+
+    // Public directory.
+    printf("Public Directory: %s\n", cfg->public_dir);
 }
