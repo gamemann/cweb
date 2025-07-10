@@ -67,6 +67,8 @@ int server__setup_raw(ctx_t* ctx) {
             continue;
         }
 
+        logger__log(ctx->cfg, LVL_TRACE, "Accepted new connection!");
+
         char buffer[4096];
         
         // Read data.
@@ -82,6 +84,8 @@ int server__setup_raw(ctx_t* ctx) {
 
         buffer[read] = '\0';
 
+        logger__log(ctx->cfg, LVL_TRACE, "Read %d bytes from request.", read);
+
         http_request_t req = {0};
 
         if ((ret = http__request_parse(ctx, &req, buffer)) != 0) {
@@ -91,6 +95,8 @@ int server__setup_raw(ctx_t* ctx) {
 
             continue;
         }
+
+        logger__log(ctx->cfg, LVL_NOTICE, "Method => %s. Path => %s. Version => %s", req.method, req.path, req.version);
 
         // Create response.
         http_response_t res = {0};
@@ -135,6 +141,8 @@ int server__setup_raw(ctx_t* ctx) {
 
             continue;
         }
+
+        logger__log(ctx->cfg, LVL_TRACE, "Sending back code: %d", res.code);
 
         int s = send(new_fd, res_full, strlen(res_full), 0);
 
