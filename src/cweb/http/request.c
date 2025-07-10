@@ -1,34 +1,4 @@
-#include "http.h"
-
-const char* http__header_get(http_header_t* headers, int header_cnt, const char* name) {
-    for (int i = 0; i < header_cnt; i++) {
-        http_header_t *header = &headers[i];
-
-        if (strcmp(header->name, name) != 0)
-            continue;
-
-        return header->value;
-    }
-
-    return NULL;
-}
-
-int http__header_add(http_header_t* headers, int* header_cnt, const char* name, const char* value) {
-    if (*header_cnt >= MAX_HEADERS)
-        return 1;
-
-    http_header_t *header = &headers[*header_cnt];
-
-    strncpy(header->name, name, sizeof(header->name) - 1);
-    header->name[sizeof(header->name) - 1] = '\0';
-
-    strncpy(header->value, value, sizeof(header->value) - 1);
-    header->value[sizeof(header->value) - 1] = '\0';
-
-    (*header_cnt)++;
-
-    return 0;
-}
+#include "request.h"
 
 int http__request_parse_info(http_request_t* req, char* line) {
     // Make sure we have enough spaces.
@@ -69,40 +39,8 @@ int http__request_parse_info(http_request_t* req, char* line) {
     return 0;
 }
 
-int http__request_is_header(const char* line) {
-    return strstr(line, ":") != NULL;
-}
-
-int http__request_parse_header(http_request_t* req, const char* line) {
-    // We need to make another copy.
-    char *line_cpy = strdup(line);
-
-    if (!line_cpy)
-        return 1;
-
-    char *ptr = strtok(line_cpy, ":");
-
-    // Make sure a colon exists.
-    if (ptr == NULL)
-        return 2;
-
-    // Retrieve header name.
-    char name[MAX_NAME_LEN];
-    strncpy(name, ptr, sizeof(name) - 1);
-    name[sizeof(name) - 1] = '\0';
-
-    ptr = strtok(NULL, ":");
-
-    // Retrieve header value.
-    char value[4096];
-    strncpy(value, ptr, sizeof(value) - 1);
-    value[sizeof(value) - 1] = '\0';
-
-    // Free line copy.
-    free(line_cpy);
-    line_cpy = NULL;
-
-    return http__header_add(req->headers, &req->headers_cnt, name, value);
+int http__request_header_parse(http_request_t* req, const char* line) {
+    return http__header_parse_raw(req->headers, &req->headers_cnt, line);
 }
 
 int http__request_parse(ctx_t* ctx, http_request_t* req, const char* buffer) {
@@ -148,8 +86,8 @@ int http__request_parse(ctx_t* ctx, http_request_t* req, const char* buffer) {
             }
         } else {
             // Check for header.
-            if (http__request_is_header(line)) {
-                if ((ret = http__request_parse_header(req, line)) != 0) {
+            if (http__is_header(line)) {
+                if ((ret = http__request_header_parse(req, line)) != 0) {
                     logger__log(ctx->cfg, LVL_ERROR, "Failed to parse HTTP request header (code => %d)", ret);
 
                     ret = 4;
@@ -174,4 +112,63 @@ exit:
     }
 
     return ret;
+}
+
+char* http__request_write(http_request_t* req) {
+    // We need to determine the full length request.
+    size_t len = 0;
+
+    // Start with information (method, path, and version).
+    len += strlen(req->method) + 1 + strlen(req->path) + 1 + strlen(req->version) + 2;
+
+    // Loop through headers and add up sizes of name and value.
+    for (int i = 0; i < req->headers_cnt; i++) {
+        http_header_t *t = &req->headers[i];
+
+        len += strlen(t->name) + 2 + strlen(t->value) + 2;
+    }
+
+    // \r\n between headers and body.
+    len += 2;
+
+    if (req->body)
+        len += strlen(req->body);
+
+    // Null terminator.
+    len++;
+
+    // Allocate buffer to store request in.
+    char *buffer = malloc(len);
+
+    if (!buffer)
+        return NULL;
+
+    // Create offset.
+    size_t off = 0;
+
+    // Write response information (method, path, and version).
+    off += snprintf(buffer + off, len - off, "%s %s %s\r\n", req->method, req->path, req->version);
+
+    // Add headers.
+    for (int i = 0; i < req->headers_cnt; i++) {
+        http_header_t *t = &req->headers[i];
+
+        if (!t->value)
+            continue;
+
+        off += snprintf(buffer + off, len - off, "%s: %s\r\n", t->name, t->value);
+    }
+
+    off += snprintf(buffer + off, len - off, "\r\n");
+
+    if (req->body) {
+        size_t body_len = strlen(req->body);
+
+        memcpy(buffer + off, req->body, body_len);
+        off += body_len;
+    }
+
+    buffer[off] = '\0';
+
+    return buffer;
 }

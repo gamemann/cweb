@@ -54,12 +54,23 @@ CWEB_OBJ_SERVER_RAW = raw.o
 CWEB_OBJ_SERVER_FACILIO_SRC = server/facilio.c
 CWEB_OBJ_SERVER_FACILIO = facilio.o
 
-# CWeb HTTP object.
-CWEB_OBJ_HTTP_SRC = http/http.c
-CWEB_OBJ_HTTP = http.o
+# CWeb HTTP objects.
+CWEB_OBJ_HTTP_COMMON_SRC = http/common.c
+CWEB_OBJ_HTTP_COMMON = http_common.o
+
+CWEB_OBJ_HTTP_REQUEST_SRC = http/request.c
+CWEB_OBJ_HTTP_REQUEST = http_request.o
+
+CWEB_OBJ_HTTP_RESPONSE_SRC = http/response.c
+CWEB_OBJ_HTTP_RESPONSE = http_response.o
 
 # CWeb objects (linker).
-CWEB_OBJS = $(UTILS_BUILD_DIR)/$(UTILS_OBJ_HELPERS) $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_CLI) $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_CONFIG) $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_LOGGER) $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_SERVER) $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_SERVER_RAW) $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_SERVER_FACILIO) $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_HTTP)
+CWEB_OBJS = $(UTILS_BUILD_DIR)/$(UTILS_OBJ_HELPERS)
+CWEB_OBJS += $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_CLI)
+CWEB_OBJS += $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_CONFIG)
+CWEB_OBJS += $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_LOGGER)
+CWEB_OBJS += $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_SERVER) $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_SERVER_RAW) $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_SERVER_FACILIO)
+CWEB_OBJS += $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_HTTP_COMMON) $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_HTTP_REQUEST) $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_HTTP_RESPONSE)
 
 # Common includes.
 COMMON_INCS = -I $(SRC_DIR) -I $(COMMON_DIR)
@@ -95,7 +106,7 @@ setup:
 utils_objs: setup utils_obj_helpers
 utils_obj_helpers:
 	$(CC) -O2 -g -c $(COMMON_INCS) -o $(UTILS_BUILD_DIR)/$(UTILS_OBJ_HELPERS) $(UTILS_SRC_DIR)/$(UTILS_OBJ_HELPERS_SRC)
-cweb_objs: setup cweb_obj_cli cweb_obj_config cweb_obj_logger cweb_obj_server cweb_obj_server_raw cweb_obj_server_facilio cweb_obj_http
+cweb_objs: setup cweb_obj_cli cweb_obj_config cweb_obj_logger cweb_obj_server cweb_obj_server_raw cweb_obj_server_facilio cweb_obj_http_common cweb_obj_http_request cweb_obj_http_response
 cweb_obj_cli:
 	$(CC) -O2 -g -c $(COMMON_INCS) -o $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_CLI) $(CWEB_SRC_DIR)/$(CWEB_OBJ_CLI_SRC)
 cweb_obj_config:
@@ -108,8 +119,12 @@ cweb_obj_server_raw:
 	$(CC) -O2 -g -c $(COMMON_INCS) -o $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_SERVER_RAW) $(CWEB_SRC_DIR)/$(CWEB_OBJ_SERVER_RAW_SRC)
 cweb_obj_server_facilio:
 	$(CC) -O2 -g -c $(COMMON_INCS) -o $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_SERVER_FACILIO) $(CWEB_SRC_DIR)/$(CWEB_OBJ_SERVER_FACILIO_SRC)
-cweb_obj_http:
-	$(CC) -O2 -g -c $(COMMON_INCS) -o $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_HTTP) $(CWEB_SRC_DIR)/$(CWEB_OBJ_HTTP_SRC)
+cweb_obj_http_common:
+	$(CC) -O2 -g -c $(COMMON_INCS) -o $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_HTTP_COMMON) $(CWEB_SRC_DIR)/$(CWEB_OBJ_HTTP_COMMON_SRC)
+cweb_obj_http_request:
+	$(CC) -O2 -g -c $(COMMON_INCS) -o $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_HTTP_REQUEST) $(CWEB_SRC_DIR)/$(CWEB_OBJ_HTTP_REQUEST_SRC)
+cweb_obj_http_response:
+	$(CC) -O2 -g -c $(COMMON_INCS) -o $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_HTTP_RESPONSE) $(CWEB_SRC_DIR)/$(CWEB_OBJ_HTTP_RESPONSE_SRC)
 cweb_prog: setup cweb_objs
 	$(CC) -O2 -g $(COMMON_INCS) -ljson-c $(CWEB_OBJS) -o $(CWEB_BUILD_DIR)/$(CWEB_PROG_OUT) $(CWEB_SRC_DIR)/$(CWEB_PROG_SRC)
 stress_objs: setup stress_obj_cli
