@@ -65,6 +65,10 @@ CWEB_OBJ_HTTP_REQUEST = http_request.o
 CWEB_OBJ_HTTP_RESPONSE_SRC = http/response.c
 CWEB_OBJ_HTTP_RESPONSE = http_response.o
 
+# CWeb FS objects.
+CWEB_OBJ_FS_WEB_SRC = fs/web.c
+CWEB_OBJ_FS_WEB = fs_web.o
+
 # CWeb objects (linker).
 CWEB_OBJS = $(UTILS_BUILD_DIR)/$(UTILS_OBJ_HELPERS)
 CWEB_OBJS += $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_CLI)
@@ -72,6 +76,7 @@ CWEB_OBJS += $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_CONFIG)
 CWEB_OBJS += $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_LOGGER)
 CWEB_OBJS += $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_SERVER) $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_SERVER_RAW) $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_SERVER_FACILIO)
 CWEB_OBJS += $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_HTTP_COMMON) $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_HTTP_REQUEST) $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_HTTP_RESPONSE)
+CWEB_OBJS += $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_FS_WEB)
 
 # Common includes.
 COMMON_INCS = -I $(SRC_DIR)
@@ -115,7 +120,7 @@ setup:
 utils_objs: setup utils_obj_helpers
 utils_obj_helpers:
 	$(CC) $(FLAGS) -c $(COMMON_INCS) -o $(UTILS_BUILD_DIR)/$(UTILS_OBJ_HELPERS) $(UTILS_SRC_DIR)/$(UTILS_OBJ_HELPERS_SRC)
-cweb_objs: setup cweb_obj_cli cweb_obj_config cweb_obj_logger cweb_obj_server cweb_obj_server_raw cweb_obj_server_facilio cweb_obj_http_common cweb_obj_http_request cweb_obj_http_response
+cweb_objs: setup cweb_obj_cli cweb_obj_config cweb_obj_logger cweb_obj_server cweb_obj_server_raw cweb_obj_server_facilio cweb_obj_http_common cweb_obj_http_request cweb_obj_http_response cweb_obj_fs_web
 cweb_obj_cli:
 	$(CC) $(FLAGS) -c $(COMMON_INCS) -o $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_CLI) $(CWEB_SRC_DIR)/$(CWEB_OBJ_CLI_SRC)
 cweb_obj_config:
@@ -134,6 +139,8 @@ cweb_obj_http_request:
 	$(CC) $(FLAGS) -c $(COMMON_INCS) -o $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_HTTP_REQUEST) $(CWEB_SRC_DIR)/$(CWEB_OBJ_HTTP_REQUEST_SRC)
 cweb_obj_http_response:
 	$(CC) $(FLAGS) -c $(COMMON_INCS) -o $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_HTTP_RESPONSE) $(CWEB_SRC_DIR)/$(CWEB_OBJ_HTTP_RESPONSE_SRC)
+cweb_obj_fs_web:
+	$(CC) $(FLAGS) -c $(COMMON_INCS) -o $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_FS_WEB) $(CWEB_SRC_DIR)/$(CWEB_OBJ_FS_WEB_SRC)
 cweb_prog: setup cweb_objs
 	$(CC) $(FLAGS) $(COMMON_INCS) -ljson-c $(CWEB_OBJS) -o $(CWEB_BUILD_DIR)/$(CWEB_PROG_OUT) $(CWEB_SRC_DIR)/$(CWEB_PROG_SRC)
 stress_objs: setup stress_obj_cli

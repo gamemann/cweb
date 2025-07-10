@@ -6,6 +6,7 @@
 #include <cweb/http/common.h>
 #include <cweb/http/request.h>
 #include <cweb/http/response.h>
+#include <cweb/fs/web.h>
 
 #include <sys/socket.h>
 #include <netinet/in.h>

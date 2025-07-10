@@ -94,12 +94,39 @@ int server__setup_raw(ctx_t* ctx) {
 
         // Create response.
         http_response_t res = {0};
-        res.code = 200;
-        strcpy(res.msg, "OK");
         strcpy(res.version, "HTTP/1.1");
-        res.body = "<html><body>OK!</body></html>";
+
+        // Retrieve HTML contents for body.
+        char *res_body = fs__web_get_html(req.path, ctx->cfg->public_dir);
+
+        // If body doesn't exist, set to 404 not found.
+        if (!res_body) {
+            res.code = 404;
+            strcpy(res.msg, "Not Found");
+
+            // Try retrieving not found page.
+            char path[MAX_FILE_LEN];
+            snprintf(path, sizeof(path), "%s/404.html", ctx->cfg->public_dir);
+            utils__read_file(path, &res_body);
+        } else {
+            res.code = 200;
+            strcpy(res.msg, "OK");
+        }
+
+        res.body = res_body;
+
+        // Set some headers.
+        http__header_add(res.headers, &res.headers_cnt, "Server", ctx->cfg->server_name);
+        http__header_add(res.headers, &res.headers_cnt, "Content-Type", "text/html");
+        http__header_add(res.headers, &res.headers_cnt, "Cache-Control", "no-store");
 
         char *res_full = http__response_write(&res);
+
+        // Free body buffer.
+        if (res_body) {
+            free(res_body);
+            res_body = NULL;
+        }
 
         if (!res_full) {
             logger__log(ctx->cfg, LVL_ERROR, "Failed to generate response.", ret);
