@@ -36,8 +36,5 @@ struct config_overrides {
 
 void cfg__defaults(config_t* cfg);
 int cfg__load(config_t* cfg, const char* cfg_path, int load_defaults);
-int cfg__open(FILE** fp, const char* file_path);
-int cfg__read(FILE* fp, char** buffer);
 int cfg__parse(config_t* cfg, const char* data);
-int cfg__close(FILE* fp);
 void cfg__print(config_t* cfg);

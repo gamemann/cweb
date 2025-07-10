@@ -10,7 +10,6 @@ void cfg__defaults(config_t* cfg) {
     strncpy(cfg->log_file, "/var/log/cweb.log", sizeof(cfg->log_file));
 
     strncpy(cfg->server_name, "CWeb", sizeof(cfg->server_name));
-
     strncpy(cfg->public_dir, "./public", sizeof(cfg->public_dir));
 }
 
@@ -59,7 +58,7 @@ int cfg__parse(config_t* cfg, const char* data) {
     json_object *bind_addr = json_object_object_get(root, "bind_addr");
 
     if (bind_addr)
-        strncpy(cfg->bind_addr, json_object_get_string(bind_addr), sizeof(cfg->log_file));
+        strncpy(cfg->bind_addr, json_object_get_string(bind_addr), sizeof(cfg->bind_addr));
 
     // Retrieve bind port.
     json_object *bind_port = json_object_object_get(root, "bind_port");
@@ -82,32 +81,15 @@ int cfg__parse(config_t* cfg, const char* data) {
     return 0;
 }
 
-int cfg__close(FILE* fp) {
-    if (!fp)
-        return 0;
-
-    return fclose(fp);
-}
-
 void cfg__print(config_t* cfg) {
     printf("Config settings:\n");
 
-    // Log level.
     const char *log_lvl_str = logger__get_lvl_str((log_level_t)cfg->log_lvl);
     printf("Log Level: %s (%d)\n", log_lvl_str, cfg->log_lvl);
 
-    // Log file.
     printf("Log File: %s\n", strlen(cfg->log_file) > 0 ? cfg->log_file : "N/A");
-
-    // Bind address.
     printf("Bind Address: %s\n", cfg->bind_addr);
-
-    // Bind port.
     printf("Bind Port: %d\n", cfg->bind_port);
-
-    // Server name.
     printf("Server Name: %s\n", cfg->server_name);
-
-    // Public directory.
     printf("Public Directory: %s\n", cfg->public_dir);
 }
