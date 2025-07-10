@@ -1,12 +1,9 @@
 #include "server.h"
 
-#ifdef CONF_USE_RAW_WEB_SRV
-#include <cweb/server/raw.h>
+int server__setup(ctx_t* ctx) {
+#ifdef CONF_USE_FACILIO
+    return server__setup_facilio(ctx);
 #else
-
+    return server__setup_raw(ctx);
 #endif
-
-int setup_server() {
-    return 0;
 }
-

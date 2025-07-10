@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <config.h>
-
 #include <utils/constants.h>
 #include <utils/int_types.h>
 
@@ -38,6 +36,18 @@ int main(int argc, char** argv) {
         cfg__print(&cfg);
 
         return EXIT_SUCCESS;
+    }
+
+    // Create context.
+    ctx_t ctx = {0};
+    ctx.cli = &cli;
+    ctx.cfg = &cfg;
+
+    // Spin up server.
+    if ((ret = server__setup(&ctx)) != 0) {
+        logger__log(&cfg, LVL_FATAL, "Failed to setup web server: %d", ret);
+
+        return EXIT_FAILURE;
     }
     
     return EXIT_SUCCESS;

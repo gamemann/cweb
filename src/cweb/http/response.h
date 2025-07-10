@@ -1,7 +1,5 @@
 #pragma once
 
-#include <config.h>
-
 #include <utils/constants.h>
 #include <utils/int_types.h>
 #include <utils/helpers.h>
@@ -24,3 +22,6 @@ struct http_response {
 
     char* body;
 } typedef http_response_t;
+
+int http__response_header_parse(http_response_t* res, const char* line);
+char* http__response_write(http_response_t* res);
