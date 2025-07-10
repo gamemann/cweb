@@ -1,9 +1,25 @@
 #include "common.h"
 
+/**
+ * Checks if line from HTTP request is in header format.
+ * 
+ * @param line The line contents.
+ * 
+ * @return 1 on yes or 0 on no.
+ */
 int http__is_header(const char* line) {
     return strstr(line, ":") != NULL;
 }
 
+/**
+ * Retrieves the value of the header by name.
+ * 
+ * @param headers A pointer to the headers array.
+ * @param header_cnt The amount of headers.
+ * @param name The name of the header.
+ * 
+ * @return A pointer to the header value (string) or NULL on not found.
+ */
 const char* http__header_get(http_header_t* headers, int header_cnt, const char* name) {
     for (int i = 0; i < header_cnt; i++) {
         http_header_t *header = &headers[i];
@@ -20,6 +36,16 @@ const char* http__header_get(http_header_t* headers, int header_cnt, const char*
     return NULL;
 }
 
+/**
+ * Adds a header (name => value) to the header array.
+ * 
+ * @param headers A pointer to the headers array.
+ * @param header_cnt A pointer to the header count.
+ * @param name The name of the header.
+ * @param value The value of the header.
+ * 
+ * @return 0 on success or 1 on error.
+ */
 int http__header_add(http_header_t* headers, int* header_cnt, const char* name, const char* value) {
     if (*header_cnt >= MAX_HEADERS)
         return 1;
@@ -36,6 +62,15 @@ int http__header_add(http_header_t* headers, int* header_cnt, const char* name, 
     return 0;
 }
 
+/**
+ * Parses a raw header line from the HTTP request and adds it to the headers array.
+ * 
+ * @param headers A pointer to the headers array.
+ * @param header_cnt A pointer to the header count.
+ * @param line The raw line.
+ * 
+ * @return 0 on success, 1 on line_cpy error, or 2 when colon doesn't exist in line. Otherwise, return value of http__header_add().
+ */
 int http__header_parse_raw(http_header_t* headers, int* header_cnt, const char* line) {
     // We need to make another copy.
     char *line_cpy = strdup(line);
@@ -68,7 +103,15 @@ int http__header_parse_raw(http_header_t* headers, int* header_cnt, const char* 
     return http__header_add(headers, header_cnt, name, value);
 }
 
-int http__header_cleanup(http_header_t* headers, int header_cnt) {
+/**
+ * Cleans up the headers (frees allocated header values).
+ * 
+ * @param headers A pointer to the headers array.
+ * @param header_cnt The amount of headers to clean up.
+ * 
+ * @return void
+ */
+void http__header_cleanup(http_header_t* headers, int header_cnt) {
     for (int i = 0; i < header_cnt; i++) {
         http_header_t *t = &headers[i];
 
@@ -77,6 +120,4 @@ int http__header_cleanup(http_header_t* headers, int header_cnt) {
             t->value = NULL;
         }
     }
-
-    return 0;
 }

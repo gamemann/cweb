@@ -1,5 +1,13 @@
 #include "helpers.h"
 
+/**
+ * Splits a string by a delim.
+ * 
+ * @param str The string you'd like to split.
+ * @param delim The delim to split by.
+ * 
+ * @return A pointer to pointer to the results or NULL on error.
+ */
 char** utils__str_split(char* str, const char delim) {
     char **res = NULL;
     size_t cnt = 0;
@@ -40,6 +48,14 @@ char** utils__str_split(char* str, const char delim) {
     return res;
 }
 
+/**
+ * Retrieves the delim count.
+ * 
+ * @param str The string to search in.
+ * @param delim The delim to search for.
+ * 
+ * @return The amount of occurrences.
+ */
 int utils__get_delim_cnt(char* str, const char delim) {
     int cnt = 0;
 
@@ -55,6 +71,14 @@ int utils__get_delim_cnt(char* str, const char delim) {
     return cnt;
 }
 
+/**
+ * Reads the contents of a file and allocates/stores it in buffer.
+ * 
+ * @param path The path/file to read.
+ * @param buffer A pointer to pointer of the buffer.
+ * 
+ * @return 0 on success. 1 on fopen() error. 2 on invalid file size. 3 on buffer allocation error.
+ */
 int utils__read_file(const char* path, char** buffer) {
     FILE *fp = fopen(path, "r");
 
@@ -88,6 +112,13 @@ int utils__read_file(const char* path, char** buffer) {
     return 0;
 }
 
+/**
+ * Checks if a file exists.
+ * 
+ * @param path The path to check.
+ * 
+ * @return 1 on yes or 0 on no.
+ */
 int utils__file_exists(const char* path) {
     FILE *fp = fopen(path, "r");
 

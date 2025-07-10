@@ -14,6 +14,15 @@ const struct option opts[] = {
     { NULL, 0, NULL, 0 }
 };
 
+/**
+ * Parses CLI arguments.
+ * 
+ * @param cli A pointer to the CLI structure.
+ * @param argc The arguments count.
+ * @param argv A pointer to pointer of the arguments.
+ * 
+ * @return void
+ */
 void cli__parse(cli_t* cli, int argc, char** argv) {
     int c;
 

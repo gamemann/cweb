@@ -2,6 +2,13 @@
 
 #include <cweb/logger/logger.h>
 
+/**
+ * Sets the config's defaults.
+ * 
+ * @param cfg A pointer to the config.
+ * 
+ * @return void
+ */
 void cfg__defaults(config_t* cfg) {
     strncpy(cfg->bind_addr, "127.0.0.1", sizeof(cfg->bind_addr));
     cfg->bind_port = 80;
@@ -13,6 +20,15 @@ void cfg__defaults(config_t* cfg) {
     strncpy(cfg->public_dir, "./public", sizeof(cfg->public_dir));
 }
 
+/**
+ * Loads the config.
+ * 
+ * @param cfg A pointer to the config.
+ * @param cfg_path The path to the config file to load.
+ * @param load_defaults Whether to load config defaults or not.
+ * 
+ * @return 0 on success or error from utils__read_file() or cfg__parse().
+ */
 int cfg__load(config_t* cfg, const char* cfg_path, int load_defaults) {
     int ret;
 
@@ -33,6 +49,14 @@ int cfg__load(config_t* cfg, const char* cfg_path, int load_defaults) {
     return 0;
 }
 
+/**
+ * Parses the config contents using JSON.
+ * 
+ * @param cfg A pointer to the config.
+ * @param data The JSON data to parse.
+ * 
+ * @return 0 on success or 1 if json_tokener_parse() fails.
+ */
 int cfg__parse(config_t* cfg, const char* data) {
     json_object *root, *obj;
 
@@ -81,6 +105,13 @@ int cfg__parse(config_t* cfg, const char* data) {
     return 0;
 }
 
+/**
+ * Prints the formatted config contents.
+ * 
+ * @param cfg A pointer to the config.
+ * 
+ * @return void
+ */
 void cfg__print(config_t* cfg) {
     printf("Config settings:\n");
 

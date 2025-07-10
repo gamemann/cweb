@@ -1,9 +1,24 @@
 #include "response.h"
 
+/**
+ * Parses a HTTP response header.
+ * 
+ * @param res A pointer to the HTTP response.
+ * @param line The raw header line.
+ * 
+ * @return The return of http__header_parse_raw().
+ */
 int http__response_header_parse(http_response_t* res, const char* line) {
     return http__header_parse_raw(res->headers, &res->headers_cnt, line);
 }
 
+/**
+ * Generates a plain HTTP response.
+ * 
+ * @param res A pointer to the HTTP response.
+ * 
+ * @return A character pointer to the plain HTTP response or NULL on error.
+ */
 char* http__response_write(http_response_t* res) {
     // We need to determine the full length of the response.
     size_t len = 0;

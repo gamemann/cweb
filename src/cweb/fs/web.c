@@ -1,5 +1,13 @@
 #include "web.h"
 
+/**
+ * Retrieve contents from the custom HTML file system we have.
+ * 
+ * @param uri The URI/path of the HTTP request.
+ * @param fs_root The path to the directory that acts as a HTML file system.
+ * 
+ * @return An allocated string of the HTML contents or NULL on error.
+ */
 char* fs__web_get_html(char* uri, const char* fs_root) {
     if (!uri || uri[0] != '/')
         return NULL;

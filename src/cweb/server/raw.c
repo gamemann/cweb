@@ -1,5 +1,12 @@
 #include "raw.h"
 
+/**
+ * Sets up a raw server.
+ * 
+ * @param ctx A pointer to the context.
+ * 
+ * @return 0 on success. 1 on socket setup failure. 2 on bind address conversion failure. 3 on bind error. 4 on listen error.
+ */
 int server__setup_raw(ctx_t* ctx) {
     int ret;
 

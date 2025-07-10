@@ -1,5 +1,13 @@
 #include "request.h"
 
+/**
+ * Parses the HTTP request information (first line with method, path, and version).
+ * 
+ * @param req A pointer to the HTTP request.
+ * @param line The line to parse.
+ * 
+ * @return 0 on success, 1 on error due to incorrect space count, 2 on error with splitting by spaces, 3 on error parsing.
+ */
 int http__request_parse_info(http_request_t* req, char* line) {
     // Make sure we have enough spaces.
     int space_cnt = utils__get_delim_cnt(line, ' ');
@@ -39,10 +47,27 @@ int http__request_parse_info(http_request_t* req, char* line) {
     return 0;
 }
 
+/**
+ * Parses a HTTP request header.
+ * 
+ * @param req A pointer to the request.
+ * @param line The line to parse.
+ * 
+ * @return 0 on success or code from http__header_parse_raw().
+ */
 int http__request_header_parse(http_request_t* req, const char* line) {
     return http__header_parse_raw(req->headers, &req->headers_cnt, line);
 }
 
+/**
+ * Parses a HTTP request.
+ * 
+ * @param ctx A pointer to the context.
+ * @param req A pointer to the HTTP request.
+ * @param buffer The full HTTP request.
+ * 
+ * @return 0 on success. 2 or 3 on malformed HTTP request. 4 on malformed HTTP header.
+ */
 int http__request_parse(ctx_t* ctx, http_request_t* req, const char* buffer) {
     int ret = 0;
 
@@ -114,6 +139,13 @@ exit:
     return ret;
 }
 
+/**
+ * Generates the payload of a plain HTTP request.
+ * 
+ * @param req A pointer to the HTTP request.
+ * 
+ * @return A character pointer to the plain HTTP request or NULL on error.
+ */
 char* http__request_write(http_request_t* req) {
     // We need to determine the full length request.
     size_t len = 0;
