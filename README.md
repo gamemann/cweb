@@ -1,16 +1,25 @@
-## Not Finished & Not Intended For Production Use!!!
-This is a low-level web server written in C. This project is a work-in-progress and I'm using it to learn more about web servers in general. It is currently **not in a runnable state**.
+This is a low-level web server written in C. This project is a work-in-progress and I'm using it to learn more about web servers in general. I also plan on learning more about web-related attacks and may store source code of tests and such in this repository in the future.
 
-At this time, there are no plans to make this **production-ready**. This may change in the future depending on how much work I put into the project. However, right now my main focus is to learn more.
+While the web server is in a runnable state, it is **not ready for production use**. I'm not entirely sure if I'll make this ready for production in the future. It will take a lot of time, but hey, maybe some day!
+
+![CWeb Preview](./images/cweb-preview.gif)
 
 ## Server Modes
-There are two modes that can be run.
+This web server will run with two modes. **At this time, only the raw mode is available**.
 
 ### Raw
-This mode uses raw Linux sockets to parse and send HTTP requests and responses.
+This mode uses TCP cooked Linux sockets to parse and send HTTP requests and responses. This is a low-level implementation.
 
 ### Facil.io
 This mode uses the [Facil.io](https://facil.io/) web framework to parse and send HTTP requests and responses.
+
+## HTML File System
+At this time, the web server implements a basic HTML file system. The URI paths from a HTTP request is mapped to the file system in [`public/`](./public/), but can be changed with the `public_dir` configuration setting detailed later on in this README. For example, say you're using the domain `test123.com`.
+
+* `test123.com` => [`./public/index.html`](./public/index.html)
+* `test123.com/test` => [`./public/test/index.html`](./public/test/index.html)
+* `test123.com/test2` => [`./public/test2.html`](./public/test2.html)
+* `test123.com/definitely/not/found` => [`./public/404.html`](./public/404.html)
 
 ## Building
 If you're cloning this project, make sure to clone all of its submodules which includes [JSON-C](https://github.com/json-c/json-c) (required) and [Facil.io](https://facil.io/) (not required if using raw mode).
@@ -78,9 +87,17 @@ The following command line arguments are supported for `cweb-stress`.
 
 ## Configuration
 ### Build Time Configuration
-There are config options in the [`common/config.h`](./common/config.h) file that may be adjusted.
+At this time, the build configuration is only used to set the mode. If you want to use the Facilio mode when it becomes available, you can set the `CONF_USE_FACILIO` environmental variable before building the project above. Here are some examples.
 
-When values are changed in the config, you must rebuild and reinstall the tool for the changes to take effect!
+```bash
+# Example 1
+CONF_USE_FACILIO=1 make
+
+# Example 2
+export CONF_USE_FACILIO=1
+
+make
+```
 
 ### Run Time Configuration
 There are config files available in a config file on disk that utilizes JSON. The default config file location is `./conf.json`. I recommend copying or renaming the [`conf.ex.json`](./conf.ex.json) file to `conf.json`.
@@ -95,6 +112,15 @@ The following runtime config options are available.
 | `log_file` | string | `/var/log/cweb.log` | The path to the log file. |
 | `bind_addr` | string | `0.0.0.0` | The address to bind the web server to. |
 | `bind_port` | int | `8` | The port to bind the web server to. |
+| `server_name` | string | `CWeb` | The name of the web server (set as the "Server" response header). |
+| `public_dir` | string | `./public` | The path to the HTML file system. |
+
+## Images
+![CWeb Preview01](./images/cweb-preview01.png)
+
+![CWeb Preview02](./images/cweb-preview02.png)
+
+![CWeb Preview03](./images/cweb-preview03.png)
 
 ## Credits
 * [Christian Deacon](https://github.com/gamemann)
