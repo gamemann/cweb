@@ -54,3 +54,40 @@ int utils__get_delim_cnt(char* str, const char delim) {
 
     return cnt;
 }
+
+int utils__read_file(const char* path, char** buffer) {
+    FILE *fp = fopen(path, "r");
+
+    if (!fp)
+        return 1;
+
+    fseek(fp, 0, SEEK_END);
+    ssize_t file_sz = ftell(fp);
+    rewind(fp);
+
+    if (file_sz <= 0)
+        return 2;
+
+    *buffer = malloc(file_sz + 1);
+
+    if (*buffer == NULL)
+        return 3;
+
+    size_t r = fread(*buffer, 1, file_sz, fp);
+
+    (*buffer)[r] = '\0';
+
+    return 0;
+}
+
+int utils__file_exists(const char* path) {
+    FILE *fp = fopen(path, "r");
+
+    if (fp) {
+        fclose(fp);
+
+        return 1;
+    }
+
+    return 0;
+}
