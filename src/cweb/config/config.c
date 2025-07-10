@@ -15,63 +15,21 @@ void cfg__defaults(config_t* cfg) {
 }
 
 int cfg__load(config_t* cfg, const char* cfg_path, int load_defaults) {
-    FILE *fp = NULL;
     int ret;
 
     // Check for defaults.
     if (load_defaults)
         cfg__defaults(cfg);
 
-    if ((ret = cfg__open(&fp, cfg_path)) != 0)
-        return ret;
-
     char *buffer = NULL;
 
-    if ((ret = cfg__read(fp, &buffer)) != 0)
+    if ((ret = utils__read_file(cfg_path, &buffer)) != 0)
         return ret;
 
     if ((ret = cfg__parse(cfg, buffer)) != 0)
         return ret;
 
     free(buffer);
-
-    if ((ret = cfg__close(fp)) != 0)
-        return ret;
-
-    return 0;
-}
-
-int cfg__open(FILE** fp, const char* file_path) {
-    if (*fp != NULL) {
-        fclose(*fp);
-
-        *fp = NULL;
-    }
-
-    *fp = fopen(file_path, "r");
-
-    if (*fp == NULL)
-        return 1;
-
-    return 0;
-}
-
-int cfg__read(FILE* fp, char** buffer) {
-    fseek(fp, 0, SEEK_END);
-    long file_sz = ftell(fp);
-    rewind(fp);
-
-    if (file_sz <= 0)
-        return 1;
-
-    *buffer = malloc(file_sz + 1);
-
-    if (*buffer == NULL)
-        return 2;
-
-    size_t read = fread(*buffer, 1, file_sz, fp);
-
-    (*buffer)[read] = '\0';
 
     return 0;
 }

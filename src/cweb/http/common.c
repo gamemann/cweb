@@ -72,9 +72,6 @@ int http__header_cleanup(http_header_t* headers, int header_cnt) {
     for (int i = 0; i < header_cnt; i++) {
         http_header_t *t = &headers[i];
 
-        if (!t)
-            continue;
-
         if (t->value) {
             free(t->value);
             t->value = NULL;
