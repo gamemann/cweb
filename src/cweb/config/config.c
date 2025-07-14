@@ -102,6 +102,12 @@ int cfg__parse(config_t* cfg, const char* data) {
     if (public_dir)
         strncpy(cfg->public_dir, json_object_get_string(public_dir), sizeof(cfg->public_dir));
 
+    // Retrieve threads count.
+    json_object *threads = json_object_object_get(root, "threads");
+
+    if (threads)
+        cfg->threads = json_object_get_int(threads);
+
     // Retrieve allowed hosts.
     cfg->allowed_hosts_cnt = 0;
 

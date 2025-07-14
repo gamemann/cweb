@@ -25,6 +25,8 @@ struct config {
     char server_name[MAX_NAME_LEN];
     char public_dir[MAX_FILE_LEN];
 
+    int threads;
+
     char allowed_hosts[MAX_ALLOWED_HOSTS][MAX_IP_LEN];
     int allowed_hosts_cnt;
 
