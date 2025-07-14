@@ -45,6 +45,10 @@ CWEB_OBJ_LOGGER = logger.o
 CWEB_OBJ_SERVER_SRC = server/server.c
 CWEB_OBJ_SERVER = server.o
 
+# CWeb server thread object.
+CWEB_OBJ_SERVER_THREAD_SRC = server/thread.c
+CWEB_OBJ_SERVER_THREAD = thread.o
+
 # CWeb HTTP objects.
 CWEB_OBJ_HTTP_COMMON_SRC = http/common.c
 CWEB_OBJ_HTTP_COMMON = http_common.o
@@ -64,7 +68,7 @@ CWEB_OBJS = $(UTILS_BUILD_DIR)/$(UTILS_OBJ_HELPERS)
 CWEB_OBJS += $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_CLI)
 CWEB_OBJS += $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_CONFIG)
 CWEB_OBJS += $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_LOGGER)
-CWEB_OBJS += $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_SERVER)
+CWEB_OBJS += $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_SERVER) $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_SERVER_THREAD)
 CWEB_OBJS += $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_HTTP_COMMON) $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_HTTP_REQUEST) $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_HTTP_RESPONSE)
 CWEB_OBJS += $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_FS_WEB)
 
@@ -105,7 +109,7 @@ setup:
 utils_objs: setup utils_obj_helpers
 utils_obj_helpers:
 	$(CC) $(FLAGS) -c $(COMMON_INCS) -o $(UTILS_BUILD_DIR)/$(UTILS_OBJ_HELPERS) $(UTILS_SRC_DIR)/$(UTILS_OBJ_HELPERS_SRC)
-cweb_objs: setup cweb_obj_cli cweb_obj_config cweb_obj_logger cweb_obj_server cweb_obj_http_common cweb_obj_http_request cweb_obj_http_response cweb_obj_fs_web
+cweb_objs: setup cweb_obj_cli cweb_obj_config cweb_obj_logger cweb_obj_server cweb_obj_server_thread cweb_obj_http_common cweb_obj_http_request cweb_obj_http_response cweb_obj_fs_web
 cweb_obj_cli:
 	$(CC) $(FLAGS) -c $(COMMON_INCS) -o $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_CLI) $(CWEB_SRC_DIR)/$(CWEB_OBJ_CLI_SRC)
 cweb_obj_config:
@@ -114,6 +118,8 @@ cweb_obj_logger:
 	$(CC) $(FLAGS) -c $(COMMON_INCS) -o $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_LOGGER) $(CWEB_SRC_DIR)/$(CWEB_OBJ_LOGGER_SRC)
 cweb_obj_server:
 	$(CC) $(FLAGS) -c $(COMMON_INCS) -o $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_SERVER) $(CWEB_SRC_DIR)/$(CWEB_OBJ_SERVER_SRC)
+cweb_obj_server_thread:
+	$(CC) $(FLAGS) -c $(COMMON_INCS) -o $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_SERVER_THREAD) $(CWEB_SRC_DIR)/$(CWEB_OBJ_SERVER_THREAD_SRC)
 cweb_obj_http_common:
 	$(CC) $(FLAGS) -c $(COMMON_INCS) -o $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_HTTP_COMMON) $(CWEB_SRC_DIR)/$(CWEB_OBJ_HTTP_COMMON_SRC)
 cweb_obj_http_request:
@@ -123,7 +129,7 @@ cweb_obj_http_response:
 cweb_obj_fs_web:
 	$(CC) $(FLAGS) -c $(COMMON_INCS) -o $(CWEB_BUILD_DIR_OBJ)/$(CWEB_OBJ_FS_WEB) $(CWEB_SRC_DIR)/$(CWEB_OBJ_FS_WEB_SRC)
 cweb_prog: setup cweb_objs
-	$(CC) $(FLAGS) $(COMMON_INCS) -ljson-c $(CWEB_OBJS) -o $(CWEB_BUILD_DIR)/$(CWEB_PROG_OUT) $(CWEB_SRC_DIR)/$(CWEB_PROG_SRC)
+	$(CC) $(FLAGS) $(COMMON_INCS) -lpthread -ljson-c $(CWEB_OBJS) -o $(CWEB_BUILD_DIR)/$(CWEB_PROG_OUT) $(CWEB_SRC_DIR)/$(CWEB_PROG_SRC)
 stress_objs: setup stress_obj_cli
 stress_obj_cli:
 	$(CC) $(FLAGS) -c $(COMMON_INCS) -o $(STRESS_BUILD_DIR_OBJ)/$(STRESS_OBJ_CLI) $(STRESS_SRC_DIR)/$(STRESS_OBJ_CLI_SRC)
