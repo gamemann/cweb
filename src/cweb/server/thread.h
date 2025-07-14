@@ -7,14 +7,21 @@
 #include <cweb/http/request.h>
 #include <cweb/http/response.h>
 #include <cweb/fs/web.h>
-#include <cweb/server/thread.h>
+
+#include <cweb/ctx/ctx.h>
 
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 
-#include <sys/sysinfo.h>
+#include <pthread.h>
 
-int server__setup(ctx_t* ctx, int threads);
-int server__shutdown(int threads);
+struct thread_ctx {
+    int id;
+    
+    ctx_t* ctx;
+    int sock_fd;
+} typedef thread_ctx_t;
+
+void* server__thread(void* ctx);

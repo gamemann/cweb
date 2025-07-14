@@ -91,6 +91,7 @@ The following runtime config options are available.
 | `bind_port` | int | `8` | The port to bind the web server to. |
 | `server_name` | string | `CWeb` | The name of the web server (set as the "Server" response header). |
 | `public_dir` | string | `./public` | The path to the HTML file system. |
+| `threads` | int | `0` | The amount of threads to set up to process web requests (0 = automatic). |
 | `allowed_hosts` | string/string array | `[]` | An array or single allowed hosts/domains. |
 | `allowed_user_agents` | string/string array | `[]` | An array or single allowed user agents. |
 

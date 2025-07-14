@@ -102,6 +102,12 @@ int cfg__parse(config_t* cfg, const char* data) {
     if (public_dir)
         strncpy(cfg->public_dir, json_object_get_string(public_dir), sizeof(cfg->public_dir));
 
+    // Retrieve threads count.
+    json_object *threads = json_object_object_get(root, "threads");
+
+    if (threads)
+        cfg->threads = json_object_get_int(threads);
+
     // Retrieve allowed hosts.
     cfg->allowed_hosts_cnt = 0;
 
@@ -183,6 +189,7 @@ void cfg__print(config_t* cfg) {
     printf("Bind Port: %d\n", cfg->bind_port);
     printf("Server Name: %s\n", cfg->server_name);
     printf("Public Directory: %s\n", cfg->public_dir);
+    printf("Threads => %d (0 = auto)\n", cfg->threads);
 
     if (cfg->allowed_hosts_cnt > 0) {
         printf("Allowed Hosts:\n");
