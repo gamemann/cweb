@@ -3,12 +3,13 @@
 #include <utils/constants.h>
 #include <utils/int_types.h>
 
-#include <cweb/ctx/ctx.h>
+#include <cweb/http/common.h>
+#include <cweb/http/request.h>
+#include <cweb/http/response.h>
+#include <cweb/fs/web.h>
 
-#ifdef CONF_USE_FACILIO
-#include <cweb/server/facilio.h>
-#else
-#include <cweb/server/raw.h>
-#endif
-
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
 int server__setup(ctx_t* ctx);

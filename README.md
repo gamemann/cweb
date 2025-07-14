@@ -4,15 +4,6 @@ While the web server is in a runnable state, it is **not ready for production us
 
 ![CWeb Preview](./images/cweb-preview.gif)
 
-## Server Modes
-This web server will run with two modes. **At this time, only the raw mode is available**.
-
-### Raw
-This mode uses TCP cooked Linux sockets to parse and send HTTP requests and responses. This is a low-level implementation.
-
-### Facil.io
-This mode uses the [Facil.io](https://facil.io/) web framework to parse and send HTTP requests and responses.
-
 ## HTML File System
 At this time, the web server implements a basic HTML file system. The URI paths from a HTTP request is mapped to the file system in [`public/`](./public/), but can be changed with the `public_dir` configuration setting detailed later on in this README. For example, say you're using the domain `test123.com`.
 
@@ -22,7 +13,7 @@ At this time, the web server implements a basic HTML file system. The URI paths 
 * `test123.com/definitely/not/found` => [`./public/404.html`](./public/404.html)
 
 ## Building
-If you're cloning this project, make sure to clone all of its submodules which includes [JSON-C](https://github.com/json-c/json-c) (required) and [Facil.io](https://facil.io/) (not required if using raw mode).
+If you're cloning this project, make sure to clone all of its submodule(s) which includes [JSON-C](https://github.com/json-c/json-c) (required).
 
 You can do this by passing the `--recursive` flag when cloning the repository like below.
 
@@ -53,7 +44,7 @@ To install JSON-C to the system, use the following command as root (or via `sudo
 make json-c-install
 ```
 
-### Building & Installing
+### Building & Installing Main Program
 To build the main project, simply use the command below.
 
 ```bash
@@ -86,21 +77,7 @@ The following command line arguments are supported for `cweb-stress`.
 *To Do...*
 
 ## Configuration
-### Build Time Configuration
-At this time, the build configuration is only used to set the mode. If you want to use the Facilio mode when it becomes available, you can set the `CONF_USE_FACILIO` environmental variable before building the project above. Here are some examples.
-
-```bash
-# Example 1
-CONF_USE_FACILIO=1 make
-
-# Example 2
-export CONF_USE_FACILIO=1
-
-make
-```
-
-### Run Time Configuration
-There are config files available in a config file on disk that utilizes JSON. The default config file location is `./conf.json`. I recommend copying or renaming the [`conf.ex.json`](./conf.ex.json) file to `conf.json`.
+A config file is loaded from the file system that is parsed using JSON. The default config file location is `./conf.json`. I recommend copying or renaming the [`conf.ex.json`](./conf.ex.json) file to `conf.json`.
 
 Modifying runtime config values only requires a restart in the tool for new values to take effect.
 
