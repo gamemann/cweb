@@ -108,6 +108,12 @@ int cfg__parse(config_t* cfg, const char* data) {
     if (threads)
         cfg->threads = json_object_get_int(threads);
 
+    // Retrieve thread type.
+    json_object *thread_type = json_object_object_get(root, "thread_type");
+
+    if (thread_type)
+        cfg->thread_type = (thread_type_t)json_object_get_int(thread_type);
+
     // Retrieve allowed hosts.
     cfg->allowed_hosts_cnt = 0;
 
@@ -190,6 +196,13 @@ void cfg__print(config_t* cfg) {
     printf("Server Name: %s\n", cfg->server_name);
     printf("Public Directory: %s\n", cfg->public_dir);
     printf("Threads => %d (0 = auto)\n", cfg->threads);
+    
+    char *thread_type_str = "Global Socket";
+
+    if (cfg->thread_type == THREAD_TYPE_PER_SOCK)
+        thread_type_str = "Per Socket";
+
+    printf("Thread Type => %s\n", thread_type_str);
 
     if (cfg->allowed_hosts_cnt > 0) {
         printf("Allowed Hosts:\n");

@@ -11,9 +11,10 @@
 
 #include <json-c/json.h>
 
-struct config_web_processor {
-    
-} typedef config_web_processor_t;
+enum thread_type {
+    THREAD_TYPE_GLOBAL_SOCK = 0,
+    THREAD_TYPE_PER_SOCK
+} typedef thread_type_t;
 
 struct config {
     int log_lvl;
@@ -26,6 +27,7 @@ struct config {
     char public_dir[MAX_FILE_LEN];
 
     int threads;
+    int thread_type;
 
     char allowed_hosts[MAX_ALLOWED_HOSTS][MAX_IP_LEN];
     int allowed_hosts_cnt;
