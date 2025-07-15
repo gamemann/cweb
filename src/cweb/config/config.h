@@ -7,7 +7,8 @@
 
 #include <utils/constants.h>
 #include <utils/int_types.h>
-#include <utils/helpers.h>
+
+#include <utils/file/read.h>
 
 #include <json-c/json.h>
 

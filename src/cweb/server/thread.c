@@ -14,17 +14,17 @@ void* server__thread(void* ctx) {
 
     int ret;
 
-    logger__log(cfg, LVL_INFO, "Spinning up web server thread #%d (socket FD => %d)...", tctx->id, tctx->sock_fd);
+    logger__log(cfg, LVL_INFO, "Spinning up web server thread #%d (socket FD => %d)...", tctx->id, tctx->global_sock_fd);
 
     while (1) {
-        logger__log(cfg, LVL_TRACE, "Waiting for new connections...");
+        logger__log(cfg, LVL_TRACE, "Waiting for new connections on thread #%d...", tctx->id);
 
         // Create buffer for client.
         struct sockaddr_in cl;
         socklen_t cl_len = sizeof(cl);
 
         // Accept connection.
-        int cl_fd = accept(tctx->sock_fd, (struct sockaddr*)&cl, &cl_len);
+        int cl_fd = accept(tctx->global_sock_fd, (struct sockaddr*)&cl, &cl_len);
 
         if (cl_fd < 0) {
             logger__log(cfg, LVL_ERROR, "Failed to accept connection.");

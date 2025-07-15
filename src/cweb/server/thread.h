@@ -21,7 +21,7 @@ struct thread_ctx {
     int id;
     
     ctx_t* ctx;
-    int sock_fd;
+    int global_sock_fd;
 } typedef thread_ctx_t;
 
 void* server__thread(void* ctx);
