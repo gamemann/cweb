@@ -14,7 +14,20 @@ void* server__thread(void* ctx) {
 
     int ret;
 
-    logger__log(cfg, LVL_INFO, "Spinning up web server thread #%d (socket FD => %d)...", tctx->id, tctx->global_sock_fd);
+    int sock_fd = tctx->global_sock_fd;
+
+    // Check if we need to setup a separate socket (per socket).
+    if (cfg->thread_type == THREAD_TYPE_PER_SOCK) {
+        if ((ret = server__socket_setup(&sock_fd, cfg->bind_addr, cfg->bind_port, 1)) != 0) {
+            logger__log(cfg, LVL_ERROR, "Failed to create individual socket on thread #%d (%d)", tctx->id, ret);
+
+            free(tctx);
+
+            pthread_exit(NULL);
+        }
+    }
+
+    logger__log(cfg, LVL_INFO, "Spinning up web server thread #%d (socket FD => %d)...", tctx->id, sock_fd);
 
     while (1) {
         logger__log(cfg, LVL_TRACE, "Waiting for new connections on thread #%d...", tctx->id);
@@ -24,7 +37,7 @@ void* server__thread(void* ctx) {
         socklen_t cl_len = sizeof(cl);
 
         // Accept connection.
-        int cl_fd = accept(tctx->global_sock_fd, (struct sockaddr*)&cl, &cl_len);
+        int cl_fd = accept(sock_fd, (struct sockaddr*)&cl, &cl_len);
 
         if (cl_fd < 0) {
             logger__log(cfg, LVL_ERROR, "Failed to accept connection.");
@@ -215,6 +228,9 @@ skip_body:
 
         close(cl_fd);
     }
+
+    if (cfg->thread_type == THREAD_TYPE_PER_SOCK)
+        close(sock_fd);
 
     free(tctx);
 

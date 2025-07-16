@@ -14,57 +14,16 @@ int global_sock_fd = -1;
 int server__setup(ctx_t* ctx, int threads) {
     int ret;
 
-    // Create new socket.
-    int global_sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+    // Check if we need to create a global socket.
+    if (ctx->cfg->thread_type == THREAD_TYPE_GLOBAL_SOCK) {
+        if ((ret = server__socket_setup(&global_sock_fd, ctx->cfg->bind_addr, ctx->cfg->bind_port, 1)) != 0) {
+            logger__log(ctx->cfg, LVL_FATAL, "Failed to create global socket when setting up web server (%d)", ret);
 
-    if (global_sock_fd < 0) {
-        logger__log(ctx->cfg, LVL_ERROR, "Failed to create socket.");
-
-        return 1;
+            return 1;
+        }
     }
 
-    // Allow reuse of address.
-    int opt = 1;
-
-    setsockopt(global_sock_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-
-    // Allow reuse port.
-    setsockopt(global_sock_fd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
-
-    struct in_addr in;
-
-    if (inet_pton(AF_INET, ctx->cfg->bind_addr, &in) != 1) {
-        logger__log(ctx->cfg, LVL_ERROR, "Failed to convert bind address to decimal form.");
-
-        close (global_sock_fd);
-
-        return 2;
-    }
-
-    // Generate socket information.
-    struct sockaddr_in sin = {0};
-    sin.sin_family = AF_INET;
-    sin.sin_port = htons(ctx->cfg->bind_port);
-    sin.sin_addr = in;
-
-    // Bind socket.
-    if (bind(global_sock_fd, (struct sockaddr*)&sin, sizeof(sin)) != 0) {
-        logger__log(ctx->cfg, LVL_ERROR, "Failed to bind TCP socket.");
-
-        close(global_sock_fd);
-
-        return 3;
-    }
-
-    // Listen on socket.
-    if (listen(global_sock_fd, SOMAXCONN) != 0) {
-        logger__log(ctx->cfg, LVL_ERROR, "Failed to listen on TCP socket.");
-
-        close(global_sock_fd);
-
-        return 4;
-    }
-
+    // Create threads that will be processing requests.
     for (int i = 0; i < threads; i++) {
         // Create thread context.
         thread_ctx_t *tctx = malloc(sizeof(thread_ctx_t));
@@ -99,8 +58,9 @@ int server__shutdown(int threads) {
             ret = tmp;
     }
 
-    // Attempt to close socket FD.
-    close(global_sock_fd);
+    // Close global socket if set.
+    if (global_sock_fd > -1)
+        close(global_sock_fd);
 
     return ret;
 }

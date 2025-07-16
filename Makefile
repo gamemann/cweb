@@ -37,9 +37,6 @@ CWEB_SRC_FILES := $(filter-out $(CWEB_SRC_DIR)/$(CWEB_PROG_SRC), $(CWEB_SRC_FILE
 CWEB_OBJS := $(patsubst $(CWEB_SRC_DIR)/%.c, $(CWEB_BUILD_DIR_OBJ)/%.o, $(CWEB_SRC_FILES))
 CWEB_OBJS += $(UTILS_OBJS)
 
-# Common includes.
-COMMON_INCS = -I $(SRC_DIR)
-
 # Stress build directories.
 STRESS_BUILD_DIR = $(BUILD_DIR)/cweb-stress
 STRESS_BUILD_DIR_OBJ = $(STRESS_BUILD_DIR)/obj
@@ -56,6 +53,9 @@ STRESS_SRC_FILES := $(filter-out $(STRESS_SRC_DIR)/$(STRESS_PROG_SRC), $(STRESS_
 # Stress objects (linker).
 STRESS_OBJS := $(patsubst $(STRESS_SRC_DIR)/%.c, $(STRESS_BUILD_DIR_OBJ)/%.o, $(STRESS_SRC_FILES))
 STRESS_OBJS += $(UTILS_OBJS)
+
+# Common includes.
+COMMON_INCS = -I $(SRC_DIR)
 
 # General flags.
 FLAGS = -O2 -g
@@ -86,9 +86,11 @@ json-c:
 	$(MAKE) -C $(JSON_C_DIR)/build
 json-c-install:
 	$(MAKE) -C $(JSON_C_DIR)/build install
+
 install:
 	cp -f $(CWEB_BUILD_DIR)/$(CWEB_PROG_OUT) /usr/bin
 	cp -f $(STRESS_BUILD_DIR)/$(STRESS_PROG_OUT) /usr/bin
+
 clean:
 	find $(UTILS_BUILD_DIR) -name '*.o' -delete
 	find $(CWEB_BUILD_DIR_OBJ) -name '*.o' -delete

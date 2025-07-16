@@ -8,6 +8,8 @@
 #include <cweb/http/response.h>
 #include <cweb/fs/web.h>
 
+#include <cweb/server/socket.h>
+
 #include <cweb/ctx/ctx.h>
 
 #include <sys/socket.h>
