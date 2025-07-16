@@ -2,16 +2,31 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <getopt.h>
+#include <unistd.h>
 
 #include <utils/constants.h>
 #include <utils/int_types.h>
 
 #include <utils/http/common.h>
+#include <utils/http/request.h>
 
-struct cli {
-    char host[MAX_IP_LEN];
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <netdb.h>
+
+#include <pthread.h>
+
+#include <errno.h>
+
+#define ALLOW_THREAD_DELAY
+
+struct thread_ctx {
+    int id;
+
+    char host[HTTP_HOST_MAX_LEN];
     u16 port;
 
     char domain[HTTP_DOMAIN_MAX_LEN];
@@ -24,12 +39,7 @@ struct cli {
 
     char body[4096];
 
-    int threads;
-
     u64 send_delay;
+} typedef thread_ctx_t;
 
-    int list;
-    int help;
-} typedef cli_t;
-
-void cli__parse(cli_t* cli, int argc, char **argv);
+void* client__thread_main(void* tmp);
