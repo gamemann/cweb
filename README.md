@@ -85,7 +85,7 @@ The following command line arguments are supported for `cweb-stress`.
 | `--ua -u <val>` | - | The user agent to set (if unset, will not pass the `User-Agent` HTTP header). |
 | `--body -b` | - | The HTTP body to send. |
 | `--threads -t` | - | The amount of threads to create (if unset, will use amount of CPUs the host has). |
-| `--send-delay -s` | 0 | The amount of time in microseconds to wait between sending HTTP requests on each thread. Leaving this at 0 will result in the best performance, but if you don't want to send as many requests at once, raising this value is the solution. |
+| `--send-delay -s` | `0` | The amount of time in microseconds to wait between sending HTTP requests on each thread. Leaving this at 0 will result in the best performance, but if you don't want to send as many requests at once, raising this value is the solution. |
 | `-l --list` | - | Prints the current CLI values. |
 | `-h --help` | - | Prints the help menu and exits. |
 
