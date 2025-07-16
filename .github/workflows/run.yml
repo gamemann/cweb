@@ -29,6 +29,7 @@ jobs:
     - name: Install web server
       run: sudo make install
     - name: Create basic config file
-      run: echo '{ "bind_addr": "0.0.0.0", "bind_port": 8080 }' > ./conf.json
+      run: |
+        echo '{ "bind_addr": "0.0.0.0", "bind_port": 8080 }' > ./conf.json
     - name: Run web server for 10 seconds
       run: cweb -t 10
