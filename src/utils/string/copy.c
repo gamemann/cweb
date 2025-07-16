@@ -9,7 +9,7 @@
  * 
  * @return void
  */
-static inline void utils__str_copy(char* dst, const char* src, size_t sz) {
+void utils__str_copy(char* dst, const char* src, size_t sz) {
     strncpy(dst, src, sz - 1);
     dst[sz - 1] = '\0';
 }
