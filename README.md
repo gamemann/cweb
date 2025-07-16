@@ -64,6 +64,7 @@ The following command line arguments are supported for `cweb`.
 | Argument | Default | Description |
 | -------- | ------- | ----------- |
 | `-c --cfg <val>` | `./conf.json` | The path to the runtime config file. |
+| `-t --time <val>` | - | If set, runs the web server for this long in seconds before exiting. |
 | `-l --list` | - | Prints the contents of the runtime config and exits. |
 | `-h --help` | - | Prints the help menu and exits. |
 | `-r --log-lvl <val>` | - | Overrides the log level runtime config value. |

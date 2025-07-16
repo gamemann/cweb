@@ -12,6 +12,9 @@
 
 struct cli {
     char cfg_path[MAX_FILE_LEN];
+
+    int time;
+    
     int list;
     int help;
 

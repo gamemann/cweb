@@ -11,6 +11,8 @@
 
 #include <signal.h>
 
+#include <time.h>
+
 int cont = 1;
 
 void sig_hdl(int tmp) {
@@ -33,6 +35,7 @@ int main(int argc, char** argv) {
         printf("Usage: cweb [OPTIONS]\n\n");
 
         printf("  -c, --cfg <val>          Path to the runtime config file (default: ./conf.json).\n");
+        printf("  -t, --time <val>         If set, runs the web server for this long in seconds before exiting.\n");
         printf("  -l, --list               Print the contents of the runtime config and exit.\n");
         printf("  -h, --help               Show this help message and exit.\n");
         printf("  -r, --log-lvl <val>      Override the log level value from the config.\n");
@@ -86,8 +89,25 @@ int main(int argc, char** argv) {
     signal(SIGINT, sig_hdl);
     signal(SIGTERM, sig_hdl);
 
+    time_t start_time = time(NULL);
+    time_t end_time = 0;
+
+    if (cli.time > 0)
+        end_time = start_time + cli.time;
+
     // Loop every second until signal is caught.
     while (cont) {
+        // Check if we need to exit due to time argument.
+        if (end_time > 0) {
+            time_t cur_time = time(NULL);
+
+            if (cur_time > end_time) {
+                logger__log(&cfg, LVL_NOTICE, "Exceeded %d seconds of runtime...", cli.time);
+                
+                break;
+            }
+        }
+
         sleep(1);
     }
 

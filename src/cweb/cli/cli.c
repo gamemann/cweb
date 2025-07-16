@@ -2,6 +2,9 @@
 
 const struct option opts[] = {
     { "cfg", required_argument, NULL, 'c' },
+
+    { "time", required_argument, NULL, 't' },
+
     { "list", no_argument, NULL, 'l' },
     { "help", no_argument, NULL, 'h' },
 
@@ -26,10 +29,15 @@ const struct option opts[] = {
 void cli__parse(cli_t* cli, int argc, char** argv) {
     int c;
 
-    while ((c = getopt_long(argc, argv, "c:lhr:f:b:p:", opts, NULL)) != -1) {
+    while ((c = getopt_long(argc, argv, "c:t:lhr:f:b:p:", opts, NULL)) != -1) {
         switch (c) {
             case 'c':
                 strncpy(cli->cfg_path, optarg, sizeof(cli->cfg_path));
+
+                break;
+
+            case 't':
+                cli->time = atoi(optarg);
 
                 break;
 
