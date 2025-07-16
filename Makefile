@@ -86,6 +86,8 @@ json-c:
 	$(MAKE) -C $(JSON_C_DIR)/build
 json-c-install:
 	$(MAKE) -C $(JSON_C_DIR)/build install
+json-c-clean:
+	rm -rf $(JSON_C_DIR)/build
 
 install:
 	cp -f $(CWEB_BUILD_DIR)/$(CWEB_PROG_OUT) /usr/bin
