@@ -1,5 +1,12 @@
 #include "trim.h"
 
+/**
+ * Trims a string.
+ * 
+ * @param str The string to trim.
+ * 
+ * @return The trimmed string.
+ */
 char* utils__trim(char *str) {
     if (!str)
         return NULL;
