@@ -63,18 +63,31 @@ The following command line arguments are supported for `cweb`.
 
 | Argument | Default | Description |
 | -------- | ------- | ----------- |
-| `-c --cfg` | `./conf.json` | The path to the runtime config file. |
+| `-c --cfg <val>` | `./conf.json` | The path to the runtime config file. |
 | `-l --list` | - | Prints the contents of the runtime config and exits. |
 | `-h --help` | - | Prints the help menu and exits. |
-| `-r --log-lvl` | - | Overrides the log level runtime config value. |
-| `-f --log-file` | - | Overrides the log file runtime config value. |
-| `-b --bind-addr` | - | Overrides the bind address runtime config value. |
-| `-p --bind-port` | - | Overrides the bind port runtime config value. |
+| `-r --log-lvl <val>` | - | Overrides the log level runtime config value. |
+| `-f --log-file <val>` | - | Overrides the log file runtime config value. |
+| `-b --bind-addr <val>` | - | Overrides the bind address runtime config value. |
+| `-p --bind-port <val>` | - | Overrides the bind port runtime config value. |
 
 ### CWeb Stress
 The following command line arguments are supported for `cweb-stress`.
 
-*To Do...*
+| Argument | Default | Description |
+| -------- | ------- | ----------- |
+| `--host -i <val>` | - | The host to send HTTP requests to (supports host names and IPs). |
+| `--port -p <val>` | - | The port to send HTTP requests to. |
+| `--domain -d <val>` | `localhost` | The domain to use (what the HTTP `Host` header is set to). |
+| `--method -m <val>` | `GET` | The HTTP method to use. |
+| `--path -r <val>` | `/` | The HTTP path to use. |
+| `--http-version -v <val>` | `HTTP/1.1` | The HTTP version to use. |
+| `--ua -u <val>` | - | The user agent to set (if unset, will not pass the `User-Agent` HTTP header). |
+| `--body -b` | - | The HTTP body to send. |
+| `--threads -t` | - | The amount of threads to create (if unset, will use amount of CPUs the host has). |
+| `--send-delay -s` | 0 | The amount of time in microseconds to wait between sending HTTP requests on each thread. Leaving this at 0 will result in the best performance, but if you don't want to send as many requests at once, raising this value is the solution. |
+| `-l --list` | - | Prints the current CLI values. |
+| `-h --help` | - | Prints the help menu and exits. |
 
 ## Configuration
 A config file is loaded from the file system that is parsed using JSON. The default config file location is `./conf.json`. I recommend copying or renaming the [`conf.ex.json`](./conf.ex.json) file to `conf.json`.
