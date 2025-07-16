@@ -8,4 +8,4 @@
 
 #include <ctype.h>
 
-char* utils__trim(char *str);
+char* utils__str_trim(char *str);

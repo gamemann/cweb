@@ -27,7 +27,7 @@ const char* utils__http_header_get(http_header_t* headers, int header_cnt, const
         if (strcmp(header->name, name) != 0)
             continue;
 
-        return utils__trim(header->value);
+        return utils__str_trim(header->value);
     }
 
     return NULL;

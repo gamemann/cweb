@@ -7,7 +7,7 @@
  * 
  * @return The trimmed string.
  */
-char* utils__trim(char *str) {
+char* utils__str_trim(char *str) {
     if (!str)
         return NULL;
 
