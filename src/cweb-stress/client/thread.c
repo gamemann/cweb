@@ -69,9 +69,9 @@ void* client__thread_main(void* tmp) {
         int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
 
         if (sock_fd < 0) {
-            fprintf(stderr, "[T %d] Failed to setup socket.\n", tctx->id);
+            sleep(1);
 
-            goto thread_exit;
+            continue;
         }
 
         if (connect(sock_fd, (struct sockaddr *)&sin, sizeof(sin)) != 0) {
