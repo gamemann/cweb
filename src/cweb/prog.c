@@ -28,6 +28,21 @@ int main(int argc, char** argv) {
 
     cli__parse(&cli, argc, argv);
 
+    // Check for help menu.
+    if (cli.help) {
+        printf("Usage: cweb [OPTIONS]\n\n");
+
+        printf("  -c, --cfg <val>          Path to the runtime config file (default: ./conf.json).\n");
+        printf("  -l, --list               Print the contents of the runtime config and exit.\n");
+        printf("  -h, --help               Show this help message and exit.\n");
+        printf("  -r, --log-lvl <val>      Override the log level value from the config.\n");
+        printf("  -f, --log-file <val>     Override the log file path from the config.\n");
+        printf("  -b, --bind-addr <val>    Override the bind address from the config.\n");
+        printf("  -p, --bind-port <val>    Override the bind port from the config.\n\n");
+
+        return EXIT_SUCCESS;
+    }
+
     // Load config.
     config_t cfg = {0};
 

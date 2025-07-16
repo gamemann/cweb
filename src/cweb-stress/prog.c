@@ -29,7 +29,21 @@ int main(int argc, char** argv) {
 
     // Help menu.
     if (cli.help) {
+        printf("Usage: cweb-stress [OPTIONS]\n\n");
 
+        printf("  -i, --host <val>         The host to send HTTP requests to (supports hostnames and IPs).\n");
+        printf("  -p, --port <val>         The port to send HTTP requests to.\n");
+        printf("  -d, --domain <val>       The domain to use in the Host header (default: localhost).\n");
+        printf("  -m, --method <val>       The HTTP method to use (default: GET).\n");
+        printf("  -r, --path <val>         The HTTP path to use (default: /).\n");
+        printf("  -v, --http-version <val> The HTTP version to use (default: HTTP/1.1).\n");
+        printf("  -u, --ua <val>           The User-Agent to set (optional; skips header if unset).\n");
+        printf("  -b, --body <val>         The HTTP body to send.\n");
+        printf("  -t, --threads <val>      Number of threads to use (default: number of CPU cores).\n");
+        printf("  -s, --send-delay <val>   Delay in microseconds between each request per thread (default: 0).\n");
+        printf("  -l, --list               Print the current CLI values and exit.\n");
+        printf("  -h, --help               Show this help message and exit.\n\n");
+        
         return EXIT_SUCCESS;
     }
 
