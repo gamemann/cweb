@@ -4,6 +4,8 @@
 #include <utils/constants.h>
 #include <utils/int_types.h>
 
+#include <utils/string/copy.h>
+
 #include <cweb/cli/cli.h>
 #include <cweb/config/config.h>
 #include <cweb/logger/logger.h>
@@ -26,7 +28,7 @@ int main(int argc, char** argv) {
     cli_t cli = {0};
     
     // Set default config path.
-    strncpy(cli.cfg_path, "./conf.json", sizeof(cli.cfg_path));
+    utils__str_copy(cli.cfg_path, "./conf.json", sizeof(cli.cfg_path));
 
     cli__parse(&cli, argc, argv);
 
@@ -103,7 +105,7 @@ int main(int argc, char** argv) {
 
             if (cur_time > end_time) {
                 logger__log(&cfg, LVL_NOTICE, "Exceeded %d seconds of runtime...", cli.time);
-                
+
                 break;
             }
         }

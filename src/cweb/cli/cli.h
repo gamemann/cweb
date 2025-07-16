@@ -8,13 +8,15 @@
 #include <utils/constants.h>
 #include <utils/int_types.h>
 
+#include <utils/string/copy.h>
+
 #include <getopt.h>
 
 struct cli {
     char cfg_path[MAX_FILE_LEN];
 
     int time;
-    
+
     int list;
     int help;
 

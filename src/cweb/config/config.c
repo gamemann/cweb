@@ -14,10 +14,11 @@ void cfg__defaults(config_t* cfg) {
     cfg->bind_port = 80;
 
     cfg->log_lvl = LVL_NOTICE;
-    strncpy(cfg->log_file, "/var/log/cweb.log", sizeof(cfg->log_file));
 
-    strncpy(cfg->server_name, "CWeb", sizeof(cfg->server_name));
-    strncpy(cfg->public_dir, "./public", sizeof(cfg->public_dir));
+    utils__str_copy(cfg->log_file, "/var/log/cweb.log", sizeof(cfg->log_file));
+
+    utils__str_copy(cfg->server_name, "CWeb", sizeof(cfg->server_name));
+    utils__str_copy(cfg->public_dir, "./public", sizeof(cfg->public_dir));
 }
 
 /**
@@ -76,13 +77,13 @@ int cfg__parse(config_t* cfg, const char* data) {
     json_object *log_file = json_object_object_get(root, "log_file");
 
     if (log_file)
-        strncpy(cfg->log_file, json_object_get_string(log_file), sizeof(cfg->log_file));
+        utils__str_copy(cfg->log_file, json_object_get_string(log_file), sizeof(cfg->log_file));
 
     // Retrieve bind address.
     json_object *bind_addr = json_object_object_get(root, "bind_addr");
 
     if (bind_addr)
-        strncpy(cfg->bind_addr, json_object_get_string(bind_addr), sizeof(cfg->bind_addr));
+        utils__str_copy(cfg->bind_addr, json_object_get_string(bind_addr), sizeof(cfg->bind_addr));
 
     // Retrieve bind port.
     json_object *bind_port = json_object_object_get(root, "bind_port");
@@ -94,13 +95,13 @@ int cfg__parse(config_t* cfg, const char* data) {
     json_object *server_name = json_object_object_get(root, "server_name");
 
     if (server_name)
-        strncpy(cfg->server_name, json_object_get_string(server_name), sizeof(cfg->server_name));
+        utils__str_copy(cfg->server_name, json_object_get_string(server_name), sizeof(cfg->server_name));
 
     // Retrieve public HTML directory.
     json_object *public_dir = json_object_object_get(root, "public_dir");
 
     if (public_dir)
-        strncpy(cfg->public_dir, json_object_get_string(public_dir), sizeof(cfg->public_dir));
+        utils__str_copy(cfg->public_dir, json_object_get_string(public_dir), sizeof(cfg->public_dir));
 
     // Retrieve threads count.
     json_object *threads = json_object_object_get(root, "threads");
@@ -132,13 +133,13 @@ int cfg__parse(config_t* cfg, const char* data) {
                 
                 host = json_object_array_get_idx(allowed_hosts, i);
 
-                strncpy(cfg->allowed_hosts[i], json_object_get_string(host), sizeof(cfg->allowed_hosts[i]));
+                utils__str_copy(cfg->allowed_hosts[i], json_object_get_string(host), sizeof(cfg->allowed_hosts[i]));
 
                 cfg->allowed_hosts_cnt++;
             }
         } else {
             // Treat as a single string.
-            strncpy(cfg->allowed_hosts[0], json_object_get_string(allowed_hosts), sizeof(cfg->allowed_hosts[0]));
+            utils__str_copy(cfg->allowed_hosts[0], json_object_get_string(allowed_hosts), sizeof(cfg->allowed_hosts[0]));
 
             cfg->allowed_hosts_cnt = 1;
         }
@@ -162,13 +163,13 @@ int cfg__parse(config_t* cfg, const char* data) {
 
                 ua = json_object_array_get_idx(allowed_user_agents, i);
 
-                strncpy(cfg->allowed_user_agents[i], json_object_get_string(ua), sizeof(cfg->allowed_user_agents[i]));
+                utils__str_copy(cfg->allowed_user_agents[i], json_object_get_string(ua), sizeof(cfg->allowed_user_agents[i]));
 
                 cfg->allowed_user_agents_cnt++;
             }
         } else {
             // Treat as a single string.
-            strncpy(cfg->allowed_user_agents[0], json_object_get_string(allowed_user_agents), sizeof(cfg->allowed_user_agents[0]));
+            utils__str_copy(cfg->allowed_user_agents[0], json_object_get_string(allowed_user_agents), sizeof(cfg->allowed_user_agents[0]));
 
             cfg->allowed_user_agents_cnt = 1;
         }

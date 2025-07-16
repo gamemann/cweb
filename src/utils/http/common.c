@@ -49,8 +49,7 @@ int utils__http_header_add(http_header_t* headers, int* header_cnt, const char* 
 
     http_header_t *header = &headers[*header_cnt];
 
-    strncpy(header->name, name, sizeof(header->name) - 1);
-    header->name[sizeof(header->name) - 1] = '\0';
+    utils__str_copy(header->name, name, sizeof(header->name));
 
     header->value = strdup(value);
 
@@ -84,15 +83,13 @@ int utils__http_header_parse_raw(http_header_t* headers, int* header_cnt, char* 
 
     // Retrieve header name.
     char name[MAX_NAME_LEN];
-    strncpy(name, ptr, sizeof(name) - 1);
-    name[sizeof(name) - 1] = '\0';
+    utils__str_copy(name, ptr, sizeof(name));
 
     ptr = strtok_r(NULL, ":", &save_ptr);
 
     // Retrieve header value.
     char value[4096];
-    strncpy(value, ptr, sizeof(value) - 1);
-    value[sizeof(value) - 1] = '\0';
+    utils__str_copy(value, ptr, sizeof(value));
 
     // Free line copy.
     free(line_cpy);

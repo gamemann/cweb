@@ -32,7 +32,7 @@ void cli__parse(cli_t* cli, int argc, char** argv) {
     while ((c = getopt_long(argc, argv, "c:t:lhr:f:b:p:", opts, NULL)) != -1) {
         switch (c) {
             case 'c':
-                strncpy(cli->cfg_path, optarg, sizeof(cli->cfg_path));
+                utils__str_copy(cli->cfg_path, optarg, sizeof(cli->cfg_path));
 
                 break;
 
@@ -57,12 +57,12 @@ void cli__parse(cli_t* cli, int argc, char** argv) {
                 break;
 
             case 'f':
-                strncpy(cli->o_log_file, optarg, sizeof(cli->o_log_file));
+                utils__str_copy(cli->o_log_file, optarg, sizeof(cli->o_log_file));
 
                 break;
 
             case 'b':
-                strncpy(cli->o_bind_addr, optarg, sizeof(cli->o_bind_addr));
+                utils__str_copy(cli->o_bind_addr, optarg, sizeof(cli->o_bind_addr));
 
                 break;
 

@@ -8,6 +8,8 @@
 #include <utils/constants.h>
 #include <utils/int_types.h>
 
+#include <utils/string/copy.h>
+
 #include <utils/http/common.h>
 
 struct cli {

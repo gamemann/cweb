@@ -5,6 +5,7 @@
 
 #include <utils/string/split.h>
 #include <utils/string/trim.h>
+#include <utils/string/copy.h>
 
 #include <cweb/logger/logger.h>
 

@@ -36,7 +36,7 @@ void cli__parse(cli_t* cli, int argc, char **argv) {
                 break;
 
             case 'i':
-                strncpy(cli->host, optarg, sizeof(cli->host));
+                utils__str_copy(cli->host, optarg, sizeof(cli->host));
 
                 break;
 
@@ -46,32 +46,32 @@ void cli__parse(cli_t* cli, int argc, char **argv) {
                 break;
 
             case 'd':
-                strncpy(cli->domain, optarg, sizeof(cli->domain));
+                utils__str_copy(cli->domain, optarg, sizeof(cli->domain));
 
                 break;
 
             case 'm':
-                strncpy(cli->method, optarg, sizeof(cli->method));
+                utils__str_copy(cli->method, optarg, sizeof(cli->method));
 
                 break;
 
             case 'r':
-                strncpy(cli->path, optarg, sizeof(cli->path));
+                utils__str_copy(cli->path, optarg, sizeof(cli->path));
 
                 break;
 
             case 'v':
-                strncpy(cli->http_version, optarg, sizeof(cli->http_version));
+                utils__str_copy(cli->http_version, optarg, sizeof(cli->http_version));
 
                 break;
 
             case 'u':
-                strncpy(cli->ua, optarg, sizeof(cli->ua));
+                utils__str_copy(cli->ua, optarg, sizeof(cli->ua));
 
                 break;
 
             case 'b':
-                strncpy(cli->body, optarg, sizeof(cli->body));
+                utils__str_copy(cli->body, optarg, sizeof(cli->body));
 
                 break;
 

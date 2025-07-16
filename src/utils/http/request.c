@@ -36,25 +36,17 @@ int utils__http_request_parse_info(http_request_t* req, char* line) {
         return 4;
     }
 
-    // Assign method.
-    strncpy(req->method, *(tokens), sizeof(req->method) - 1);
-    req->method[sizeof(req->method) - 1] = '\0';
+    // Assign method, path, and version from tokens.
+    utils__str_copy(req->method, *(tokens), sizeof(req->method));
+    utils__str_copy(req->path, *(tokens + 1), sizeof(req->path));
+    utils__str_copy(req->version, *(tokens + 2), sizeof(req->version));
 
-    // Assign path.
-    strncpy(req->path, *(tokens + 1), sizeof(req->path) - 1);
-    req->path[sizeof(req->path) - 1] = '\0';
-
-    // Assign version.
-    strncpy(req->version, *(tokens + 2), sizeof(req->version) - 1);
-    req->version[sizeof(req->version) - 1] = '\0';
-
-    // Free tokens.
+    // Free all tokens.
     for (int i = 0; tokens[i]; i++) {
         free(tokens[i]);
     }
 
     free(tokens);
-
     free(line_cpy);
 
     return 0;
