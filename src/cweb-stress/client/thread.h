@@ -23,8 +23,12 @@
 
 #define ALLOW_THREAD_DELAY
 
+#define ALLOW_DETAILS
+
 struct thread_ctx {
     int id;
+
+    int details;
 
     char host[HTTP_HOST_MAX_LEN];
     u16 port;

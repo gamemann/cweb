@@ -11,6 +11,8 @@
 #include <utils/http/common.h>
 
 struct cli {
+    int details;
+
     char host[MAX_IP_LEN];
     u16 port;
 

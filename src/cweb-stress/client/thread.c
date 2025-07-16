@@ -96,6 +96,11 @@ void* client__thread_main(void* tmp) {
             continue;
         }
 
+#ifdef ALLOW_DETAILS
+        if (tctx->details)
+            printf("[T %d] Sent HTTP request (%d bytes)...\n", tctx->id, b);
+#endif
+
         // Close socket.
         close(sock_fd);
        

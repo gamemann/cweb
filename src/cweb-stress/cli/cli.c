@@ -1,6 +1,7 @@
 #include "cli.h"
 
 const struct option opts[] = {
+    { "details", no_argument, NULL, 'z' },
 
     { "host", required_argument, NULL, 'i' },
     { "port", required_argument, NULL, 'p' },
@@ -27,8 +28,13 @@ const struct option opts[] = {
 void cli__parse(cli_t* cli, int argc, char **argv) {
     int c;
 
-    while ((c = getopt_long(argc, argv, "i:p:d:m:r:v:u:b:t:s:lh", opts, NULL)) != -1) {
+    while ((c = getopt_long(argc, argv, "zi:p:d:m:r:v:u:b:t:s:lh", opts, NULL)) != -1) {
         switch (c) {
+            case 'z':
+                cli->details = 1;
+
+                break;
+
             case 'i':
                 strncpy(cli->host, optarg, sizeof(cli->host));
 

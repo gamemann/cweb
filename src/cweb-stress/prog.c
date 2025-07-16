@@ -31,6 +31,7 @@ int main(int argc, char** argv) {
     if (cli.help) {
         printf("Usage: cweb-stress [OPTIONS]\n\n");
 
+        printf("  -z, --details            If set, prints to stdout whenever an HTTP request is sent (will hurt performance, but useful for debugging).\n");
         printf("  -i, --host <val>         The host to send HTTP requests to (supports hostnames and IPs).\n");
         printf("  -p, --port <val>         The port to send HTTP requests to.\n");
         printf("  -d, --domain <val>       The domain to use in the Host header (default: localhost).\n");
@@ -123,6 +124,8 @@ int main(int argc, char** argv) {
 
         // Assign thread context info.
         tctx->id = i + 1;
+
+        tctx->details = cli.details;
 
         // We're copying all values to a new context so only one thread can touch its memory.
         strcpy(tctx->host, cli.host);

@@ -76,6 +76,7 @@ The following command line arguments are supported for `cweb-stress`.
 
 | Argument | Default | Description |
 | -------- | ------- | ----------- |
+| `--details -z` | - | If set, prints to `stdout` whenever an HTTP request is sent (will hurt performance, but useful for debugging). |
 | `--host -i <val>` | - | The host to send HTTP requests to (supports host names and IPs). |
 | `--port -p <val>` | - | The port to send HTTP requests to. |
 | `--domain -d <val>` | `localhost` | The domain to use (what the HTTP `Host` header is set to). |
