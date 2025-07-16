@@ -25,6 +25,15 @@ const struct option opts[] = {
     { NULL, 0, NULL, 0 }
 };
 
+/**
+ * Parses the cweb-stress CLI.
+ * 
+ * @param cli A pointer to the CLI structure.
+ * @param argc The argument count.
+ * @param argv The arguments to parse.
+ * 
+ * @return void
+ */
 void cli__parse(cli_t* cli, int argc, char **argv) {
     int c;
 

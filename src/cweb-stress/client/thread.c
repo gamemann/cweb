@@ -1,5 +1,12 @@
 #include "thread.h"
 
+/**
+ * The client thread's main function.
+ * 
+ * @param tmp The thread context (passed as void).
+ * 
+ * @return void
+ */
 void* client__thread_main(void* tmp) {
     thread_ctx_t *tctx = (thread_ctx_t*)tmp;
 

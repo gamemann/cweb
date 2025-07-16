@@ -18,11 +18,11 @@ const struct option opts[] = {
 };
 
 /**
- * Parses CLI arguments.
+ * Parses CWeb's CLI arguments.
  * 
  * @param cli A pointer to the CLI structure.
  * @param argc The arguments count.
- * @param argv A pointer to pointer of the arguments.
+ * @param argv The arguments to parse.
  * 
  * @return void
  */

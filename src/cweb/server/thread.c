@@ -1,7 +1,7 @@
 #include "thread.h"
 
 /**
- * Spawns a thread that handles raw HTTP requests and packets from socket.
+ * The web server thread's main function that handles accepting connections and replying to HTTP requests.
  * 
  * @param ctx The thread context.
  * 

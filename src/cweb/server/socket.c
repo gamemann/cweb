@@ -1,5 +1,15 @@
 #include "socket.h"
 
+/**
+ * Sets up a web server socket.
+ * 
+ * @param sock_fd A pointer an integer that stores the socket FD when done.
+ * @param bind_addr The bind IP address.
+ * @param bind_port The bind port.
+ * @param allow_reuse_port  If 1, sets the SO_REUSEPORT socket option to 1.
+ * 
+ * @return 0 on success. 1 on socket failure. 2 on bind address conversion failure. 3 on bind error. 4 on listen error.
+ */
 int server__socket_setup(int* sock_fd, const char* bind_addr, u16 bind_port, int allow_reuse_port) {
     int ret;
 
