@@ -6,11 +6,7 @@
 #include <utils/string/split.h>
 #include <utils/string/trim.h>
 
-#include <cweb/http/common.h>
-
-#include <cweb/ctx/ctx.h>
-
-#include <cweb/logger/logger.h>
+#include <utils/http/common.h>
 
 #include <string.h>
 
@@ -25,7 +21,7 @@ struct http_request {
     char* body;
 } typedef http_request_t;
 
-int http__request_parse_info(http_request_t* req, char* line);
-int http__request_header_parse(http_request_t* req, char* line);
-int http__request_parse(ctx_t* ctx, http_request_t* req, char* buffer);
-char* http__request_write(http_request_t* req);
+int utils__http_request_parse_info(http_request_t* req, char* line);
+int utils__http_request_header_parse(http_request_t* req, char* line);
+int utils__http_request_parse(http_request_t* req, char* buffer);
+char* utils__http_request_write(http_request_t* req);

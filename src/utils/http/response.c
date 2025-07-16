@@ -6,10 +6,10 @@
  * @param res A pointer to the HTTP response.
  * @param line The raw header line.
  * 
- * @return The return of http__header_parse_raw().
+ * @return The return of utils__http_header_parse_raw().
  */
-int http__response_header_parse(http_response_t* res, char* line) {
-    return http__header_parse_raw(res->headers, &res->headers_cnt, line);
+int utils__http_response_header_parse(http_response_t* res, char* line) {
+    return utils__http_header_parse_raw(res->headers, &res->headers_cnt, line);
 }
 
 /**
@@ -19,7 +19,7 @@ int http__response_header_parse(http_response_t* res, char* line) {
  * 
  * @return A character pointer to the plain HTTP response or NULL on error.
  */
-char* http__response_write(http_response_t* res) {
+char* utils__http_response_write(http_response_t* res) {
     // We need to determine the full length of the response.
     size_t len = 0;
 

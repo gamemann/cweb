@@ -3,9 +3,6 @@
 #include <utils/constants.h>
 #include <utils/int_types.h>
 
-#include <cweb/http/common.h>
-#include <cweb/http/request.h>
-#include <cweb/http/response.h>
 #include <cweb/fs/web.h>
 #include <cweb/server/thread.h>
 

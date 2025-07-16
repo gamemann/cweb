@@ -8,7 +8,7 @@
  * 
  * @return 0 on success. 1 on line copy fail. 2 on error due to incorrect space count. 3 on error with splitting by spaces. 4 on error parsing.
  */
-int http__request_parse_info(http_request_t* req, char* line) {
+int utils__http_request_parse_info(http_request_t* req, char* line) {
     char *line_cpy = strdup(line);
 
     if (!line_cpy)
@@ -66,22 +66,21 @@ int http__request_parse_info(http_request_t* req, char* line) {
  * @param req A pointer to the request.
  * @param line The line to parse.
  * 
- * @return 0 on success or code from http__header_parse_raw().
+ * @return 0 on success or code from utils__http_header_parse_raw().
  */
-int http__request_header_parse(http_request_t* req, char* line) {
-    return http__header_parse_raw(req->headers, &req->headers_cnt, line);
+int utils__http_request_header_parse(http_request_t* req, char* line) {
+    return utils__http_header_parse_raw(req->headers, &req->headers_cnt, line);
 }
 
 /**
  * Parses a HTTP request.
  * 
- * @param ctx A pointer to the context.
  * @param req A pointer to the HTTP request.
  * @param buffer The full HTTP request.
  * 
  * @return 0 on success. 2 or 3 on malformed HTTP request. 4 on malformed HTTP header.
  */
-int http__request_parse(ctx_t* ctx, http_request_t* req, char* buffer) {
+int utils__http_request_parse(http_request_t* req, char* buffer) {
     int ret = 0;
 
     // Copy buffer (needed for strtok()).
@@ -116,22 +115,18 @@ int http__request_parse(ctx_t* ctx, http_request_t* req, char* buffer) {
     while (line != NULL) {        
         // The first line includes information on request (method, path, and HTTP version).
         if (line_num == 1) {
-            if ((ret = http__request_parse_info(req, line)) != 0) {
-                logger__log(ctx->cfg, LVL_ERROR, "Failed to parse HTTP request information (code => %d)", ret);
-
+            if ((ret = utils__http_request_parse_info(req, line)) != 0) {
                 ret = 3;
 
-                break;
+                goto exit;
             }
         } else {
             // Check for header.
-            if (http__is_header(line)) {
-                if ((ret = http__request_header_parse(req, line)) != 0) {
-                    logger__log(ctx->cfg, LVL_ERROR, "Failed to parse HTTP request header (code => %d)", ret);
-
+            if (utils__http_is_header(line)) {
+                if ((ret = utils__http_request_header_parse(req, line)) != 0) {
                     ret = 4;
 
-                    break;
+                    goto exit;
                 }
             }
         }
@@ -160,7 +155,7 @@ exit:
  * 
  * @return A character pointer to the plain HTTP request or NULL on error.
  */
-char* http__request_write(http_request_t* req) {
+char* utils__http_request_write(http_request_t* req) {
     // We need to determine the full length request.
     size_t len = 0;
 

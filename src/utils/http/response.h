@@ -6,12 +6,7 @@
 #include <utils/string/split.h>
 #include <utils/string/trim.h>
 
-
-#include <cweb/http/common.h>
-
-#include <cweb/ctx/ctx.h>
-
-#include <cweb/logger/logger.h>
+#include <utils/http/common.h>
 
 #include <string.h>
 
@@ -26,5 +21,5 @@ struct http_response {
     char* body;
 } typedef http_response_t;
 
-int http__response_header_parse(http_response_t* res, char* line);
-char* http__response_write(http_response_t* res);
+int utils__http_response_header_parse(http_response_t* res, char* line);
+char* utils__http_response_write(http_response_t* res);

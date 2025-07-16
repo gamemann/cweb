@@ -66,7 +66,7 @@ void* server__thread(void* ctx) {
 
         http_request_t req = {0};
 
-        if ((ret = http__request_parse(ctx, &req, buffer)) != 0) {
+        if ((ret = utils__http_request_parse(&req, buffer)) != 0) {
             logger__log(cfg, LVL_ERROR, "Failed to parse request: %d", ret);
 
             close(cl_fd);
@@ -82,7 +82,7 @@ void* server__thread(void* ctx) {
 
         // Check allowed hosts.
         if (cfg->allowed_hosts_cnt > 0) {
-            const char *host_full = http__header_get(req.headers, req.headers_cnt, "Host");
+            const char *host_full = utils__http_header_get(req.headers, req.headers_cnt, "Host");
 
             if (!host_full) {
                 res.code = 403;
@@ -138,7 +138,7 @@ void* server__thread(void* ctx) {
 
         // Check allowed user agents.
         if (cfg->allowed_user_agents_cnt > 0) {
-            const char *ua = http__header_get(req.headers, req.headers_cnt, "User-Agent");
+            const char *ua = utils__http_header_get(req.headers, req.headers_cnt, "User-Agent");
 
             if (!ua) {
                 res.code = 403;
@@ -190,15 +190,15 @@ void* server__thread(void* ctx) {
 skip_body:
 
         // Set some headers.
-        http__header_add(res.headers, &res.headers_cnt, "Server", cfg->server_name);
-        http__header_add(res.headers, &res.headers_cnt, "Content-Type", "text/html");
-        http__header_add(res.headers, &res.headers_cnt, "Cache-Control", "no-store");
+        utils__http_header_add(res.headers, &res.headers_cnt, "Server", cfg->server_name);
+        utils__http_header_add(res.headers, &res.headers_cnt, "Content-Type", "text/html");
+        utils__http_header_add(res.headers, &res.headers_cnt, "Cache-Control", "no-store");
 
-        char *res_full = http__response_write(&res);
+        char *res_full = utils__http_response_write(&res);
 
         // Cleanup both request and response headers now since they're not needed.
-        http__header_cleanup(req.headers, req.headers_cnt);
-        http__header_cleanup(res.headers, res.headers_cnt);
+        utils__http_header_cleanup(req.headers, req.headers_cnt);
+        utils__http_header_cleanup(res.headers, res.headers_cnt);
 
         // Free body buffer.
         if (res_body) {

@@ -7,7 +7,7 @@
  * 
  * @return 1 on yes or 0 on no.
  */
-int http__is_header(char* line) {
+int utils__http_is_header(char* line) {
     return strstr(line, ":") != NULL;
 }
 
@@ -20,7 +20,7 @@ int http__is_header(char* line) {
  * 
  * @return A pointer to the header value (string) or NULL on not found.
  */
-const char* http__header_get(http_header_t* headers, int header_cnt, const char* name) {
+const char* utils__http_header_get(http_header_t* headers, int header_cnt, const char* name) {
     for (int i = 0; i < header_cnt; i++) {
         http_header_t *header = &headers[i];
         
@@ -43,7 +43,7 @@ const char* http__header_get(http_header_t* headers, int header_cnt, const char*
  * 
  * @return 0 on success or 1 on error.
  */
-int http__header_add(http_header_t* headers, int* header_cnt, const char* name, const char* value) {
+int utils__http_header_add(http_header_t* headers, int* header_cnt, const char* name, const char* value) {
     if (*header_cnt >= MAX_HEADERS)
         return 1;
 
@@ -66,9 +66,9 @@ int http__header_add(http_header_t* headers, int* header_cnt, const char* name, 
  * @param header_cnt A pointer to the header count.
  * @param line The raw line.
  * 
- * @return 0 on success, 1 on line_cpy error, or 2 when colon doesn't exist in line. Otherwise, return value of http__header_add().
+ * @return 0 on success, 1 on line_cpy error, or 2 when colon doesn't exist in line. Otherwise, return value of utils__http_header_add().
  */
-int http__header_parse_raw(http_header_t* headers, int* header_cnt, char* line) {
+int utils__http_header_parse_raw(http_header_t* headers, int* header_cnt, char* line) {
     // We need to make another copy.
     char *line_cpy = strdup(line);
 
@@ -98,7 +98,7 @@ int http__header_parse_raw(http_header_t* headers, int* header_cnt, char* line) 
     free(line_cpy);
     line_cpy = NULL;
 
-    return http__header_add(headers, header_cnt, name, value);
+    return utils__http_header_add(headers, header_cnt, name, value);
 }
 
 /**
@@ -109,7 +109,7 @@ int http__header_parse_raw(http_header_t* headers, int* header_cnt, char* line) 
  * 
  * @return void
  */
-void http__header_cleanup(http_header_t* headers, int header_cnt) {
+void utils__http_header_cleanup(http_header_t* headers, int header_cnt) {
     for (int i = 0; i < header_cnt; i++) {
         http_header_t *t = &headers[i];
 
