@@ -195,14 +195,14 @@ void cfg__print(config_t* cfg) {
     printf("Bind Port: %d\n", cfg->bind_port);
     printf("Server Name: %s\n", cfg->server_name);
     printf("Public Directory: %s\n", cfg->public_dir);
-    printf("Threads => %d (0 = auto)\n", cfg->threads);
+    printf("Threads: %d (0 = auto)\n", cfg->threads);
     
     char *thread_type_str = "Global Socket";
 
     if (cfg->thread_type == THREAD_TYPE_PER_SOCK)
         thread_type_str = "Per Socket";
 
-    printf("Thread Type => %s\n", thread_type_str);
+    printf("Thread Type: %s\n", thread_type_str);
 
     if (cfg->allowed_hosts_cnt > 0) {
         printf("Allowed Hosts:\n");

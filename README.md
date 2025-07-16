@@ -1,3 +1,6 @@
+[![CWeb Build Workflow](https://github.com/gamemann/cweb/actions/workflows/build.yml/badge.svg)](https://github.com/gamemann/cweb/actions/workflows/build.yml) [![CWeb Run Workflow](https://github.com/gamemann/cweb/actions/workflows/run.yml/badge.svg)](https://github.com/gamemann/cweb/actions/workflows/run.yml)
+
+
 This is a **low-level**, **multithreaded** web server written in C. This project is a work-in-progress and I'm using it to learn more about web servers in general. There is also a basic HTTP **stress tool** (`cweb-stress`) included in this repository that sends HTTP requests to a host from **one or more threads** (multithreaded)!  
 
 While the web server is in a runnable state, it is **not ready for production use**. I'm not entirely sure if I'll make this ready for production in the future. It will take a lot of time, but hey, maybe some day!
