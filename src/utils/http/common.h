@@ -10,6 +10,13 @@
 
 #include <string.h>
 
+#define HTTP_HOST_MAX_LEN 255
+#define HTTP_DOMAIN_MAX_LEN 255
+#define HTTP_METHOD_MAX_LEN 6
+#define HTTP_PATH_MAX_LEN 255
+#define HTTP_VERSION_MAX_LEN 12
+#define HTTP_UA_MAX_LEN 255
+
 struct http_header {
     char name[MAX_NAME_LEN];
     char* value;
