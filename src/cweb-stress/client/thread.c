@@ -35,13 +35,14 @@ void* client__thread_main(void* tmp) {
     req.body = body;
 
     // Create raw HTTP request.
-    buffer = utils__http_request_write(&req);
+    if (utils__http_request_write(&req, &buffer)) {
+        error_ctx_t* err = utils__error_ctx();
 
-    if (!buffer) {
-        fprintf(stderr, "[T %d] Failed to construct and write HTTP request.\n", tctx->id);
+        fprintf(stderr, "[T %d] Failed to create raw HTTP request: %s (%d)", tctx->id, err->msg, err->code);
 
         goto thread_exit;
     }
+
 
     // Resolve host.
     struct sockaddr_in sin = {0};
@@ -82,7 +83,7 @@ void* client__thread_main(void* tmp) {
         }
 
         if (connect(sock_fd, (struct sockaddr *)&sin, sizeof(sin)) != 0) {
-            fprintf(stderr, "[T %d] Failed to connect to host using connect(): %s\n", tctx->id, strerror(errno));
+            fprintf(stderr, "[T %d] Failed to connect to host using connect(): %s (%d)\n", tctx->id, strerror(errno), errno);
 
             close(sock_fd);
 

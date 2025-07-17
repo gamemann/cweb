@@ -3,6 +3,8 @@
 #include <utils/constants.h>
 #include <utils/int_types.h>
 
+#include <utils/error/error.h>
+
 #include <cweb/config/config.h>
 
 #include <stdio.h>
@@ -10,6 +12,8 @@
 #include <stdarg.h>
 
 #include <time.h>
+
+#include <errno.h>
 
 enum log_level {
     LVL_FATAL = 1,

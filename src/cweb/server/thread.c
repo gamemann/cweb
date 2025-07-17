@@ -66,8 +66,10 @@ void* server__thread(void* ctx) {
 
         http_request_t req = {0};
 
-        if ((ret = utils__http_request_parse(&req, buffer)) != 0) {
-            logger__log(cfg, LVL_ERROR, "Failed to parse request: %d", ret);
+        if (utils__http_request_parse(&req, buffer)) {
+            error_ctx_t* err = utils__error_ctx();
+
+            logger__log(cfg, LVL_ERROR, "Failed to parse request: %s (%d)", err->msg, err->code);
 
             close(cl_fd);
 
@@ -168,10 +170,21 @@ void* server__thread(void* ctx) {
             }
         }
 
-        // Retrieve HTML contents for body.
-        char *res_body = fs__web_get_html(req.path, cfg->public_dir);
+        // Retrieve HTML contents for body and check for error.
+        char *res_body = NULL;
 
-        // If body doesn't exist, set to 404 not found.
+        if (fs__web_get_html(req.path, cfg->public_dir, &res_body)) {
+            error_ctx_t *err = utils__error_ctx();
+
+            logger__log(cfg, LVL_WARN, "Failed to retrieve HTML contents from file system: %s (%d)", err->msg, err->code);
+
+            res.code = 500;
+            strcpy(res.msg, "Internal Server Error");
+
+            goto skip_body;
+        }
+
+        // If body is NULL, indicates the path was not found. Return 404 page.
         if (!res_body) {
             res.code = 404;
             strcpy(res.msg, "Not Found");
@@ -194,7 +207,17 @@ skip_body:
         utils__http_header_add(res.headers, &res.headers_cnt, "Content-Type", "text/html");
         utils__http_header_add(res.headers, &res.headers_cnt, "Cache-Control", "no-store");
 
-        char *res_full = utils__http_response_write(&res);
+        char *res_full = NULL;
+
+        if (utils__http_response_write(&res, &res_full)) {
+            error_ctx_t* err = utils__error_ctx();
+
+            logger__log(cfg, LVL_ERROR, "Failed to write raw HTTP response: %s (%d)", err->msg, err->code);
+
+            close(cl_fd);
+
+            continue;
+        }
 
         // Cleanup both request and response headers now since they're not needed.
         utils__http_header_cleanup(req.headers, req.headers_cnt);

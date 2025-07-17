@@ -4,6 +4,8 @@
 #include <utils/constants.h>
 #include <utils/int_types.h>
 
+#include <utils/error/error.h>
+
 #include <utils/string/copy.h>
 
 #include <cweb/cli/cli.h>
@@ -52,7 +54,9 @@ int main(int argc, char** argv) {
     config_t cfg = {0};
 
     if ((ret = cfg__load(&cfg, cli.cfg_path, 1)) != 0) {
-        logger__log(&cfg, LVL_FATAL, "Failed to load config '%s' (code => %d).", cli.cfg_path, ret);
+        error_ctx_t *err = utils__error_ctx();
+
+        logger__log(&cfg, LVL_FATAL, "Failed to load config '%s': %s (%d).", cli.cfg_path, err->msg, err->code);
 
         return EXIT_FAILURE;
     }
@@ -82,7 +86,9 @@ int main(int argc, char** argv) {
 
     // Spin up web server.
     if ((ret = server__setup(&ctx, threads)) != 0) {
-        logger__log(&cfg, LVL_FATAL, "Failed to setup web server: %d", ret);
+        error_ctx_t *err = utils__error_ctx();
+
+        logger__log(&cfg, LVL_FATAL, "Failed to setup web server: %s (%d)", err->msg, err->code);
 
         return EXIT_FAILURE;
     }
@@ -117,7 +123,7 @@ int main(int argc, char** argv) {
 
     // Attempt to shut down web server.
     if ((ret = server__shutdown(threads)) != 0) {
-        logger__log(&cfg, LVL_ERROR, "Failed to shutdown all web server threads (%d).", ret);
+        logger__log(&cfg, LVL_ERROR, "Failed to shutdown all web server threads: %d.", ret);
 
         return EXIT_FAILURE;
     }

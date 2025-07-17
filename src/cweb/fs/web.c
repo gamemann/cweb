@@ -5,12 +5,16 @@
  * 
  * @param uri The URI/path of the HTTP request.
  * @param fs_root The path to the directory that acts as a HTML file system.
+ * @param buffer The buffer to store the HTML contents in.
  * 
- * @return An allocated string of the HTML contents or NULL on error.
+ * @return 0 on success or 1 on error.
  */
-char* fs__web_get_html(char* uri, const char* fs_root) {
-    if (!uri || uri[0] != '/')
-        return NULL;
+int fs__web_get_html(char* uri, const char* fs_root, char** buffer) {
+    if (!uri || uri[0] != '/') {
+        ERR_SET(1, "Invalid path (NULL or doesn't start with '/').");
+
+        return 1;
+    }
 
     char path[MAX_FILE_LEN];
 
@@ -24,14 +28,19 @@ char* fs__web_get_html(char* uri, const char* fs_root) {
     // Copy URI.
     char *uri_cpy = strdup(uri);
 
-    if (!uri_cpy)
-        return NULL;
+    if (!uri_cpy) {
+        ERR_SET(2, "Failed to copy URL.");
+
+        return 1;
+    }
 
     // Check for '..' (next top folder) and reject it.
     if (strstr(uri_cpy, "..")) {
         free(uri_cpy);
 
-        return NULL;
+        ERR_SET(3, "Found '..' (directory up). Somebody may be trying to exploit the file system!");
+
+        return 1;
     }
 
     char *rel = uri_cpy + 1;
@@ -57,14 +66,13 @@ char* fs__web_get_html(char* uri, const char* fs_root) {
     // Free path copy.
     free(uri_cpy);
 
-    return NULL;
+    return 0;
 
 try_read:;
     // Read contents of file if possible.
-    char *buffer = NULL;
 
-    if (utils__read_file(path, &buffer) != 0)
-        return NULL;
+    if (utils__read_file(path, buffer) != 0)
+        return 1;
 
-    return buffer;
+    return 0;
 }

@@ -44,7 +44,7 @@ const char* logger__get_lvl_str(log_level_t lvl) {
  * @param msg The full log message.
  * @param args Arguments for log message.
  * 
- * @return 0 on success or other on error.
+ * @return 0 on success or 1 on error.
  */
 int logger__log_raw(log_level_t lvl, log_level_t req_lvl, const char* log_path, const char* msg, va_list args) {
     if ((int)req_lvl > (int)lvl)
@@ -62,8 +62,11 @@ int logger__log_raw(log_level_t lvl, log_level_t req_lvl, const char* log_path, 
     int len = vsnprintf(NULL, 0, msg, args_copy);
     va_end(args_copy);
 
-    if (len < 0)
+    if (len < 0) {
+        ERR_SET(1, "Message length after message format is below 0.");
+
         return 1;
+    }
 
     // Format log message.
     char f_msg[len + 1];
@@ -84,8 +87,11 @@ int logger__log_raw(log_level_t lvl, log_level_t req_lvl, const char* log_path, 
         // Open log file.
         FILE *log_file = fopen(log_path, "a");
 
-        if (!log_file)
-            return 2;
+        if (!log_file) {
+            ERR_SET(2, "Failed to open log path '%s': %s (%d)", log_path, strerror(errno), errno);
+
+            return 1;
+        }
 
         // Retrieve time.
         time_t now = time(NULL);
@@ -94,7 +100,9 @@ int logger__log_raw(log_level_t lvl, log_level_t req_lvl, const char* log_path, 
         if (!tm_val) {
             fclose(log_file);
 
-            return 3;
+            ERR_SET(3, "Failed to allocate tm_val.");
+
+            return 1;
         }
 
         // Format full log message to file.

@@ -6,6 +6,8 @@
 #include <utils/constants.h>
 #include <utils/int_types.h>
 
+#include <utils/error/error.h>
+
 #include <utils/file/read.h>
 
-char* fs__web_get_html(char* uri, const char* fs_root);
+int fs__web_get_html(char* uri, const char* fs_root, char** buffer);
