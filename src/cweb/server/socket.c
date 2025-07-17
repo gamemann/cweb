@@ -3,12 +3,12 @@
 /**
  * Sets up a web server socket.
  * 
- * @param sock_fd A pointer an integer that stores the socket FD when done.
+ * @param sock_fd The socket FD.
  * @param bind_addr The bind IP address.
  * @param bind_port The bind port.
  * @param allow_reuse_port  If 1, sets the SO_REUSEPORT socket option to 1.
  * 
- * @return 0 on success. 1 on socket failure. 2 on bind address conversion failure. 3 on bind error. 4 on listen error.
+ * @return 0 on success or 1 on error.
  */
 int server__socket_setup(int* sock_fd, const char* bind_addr, u16 bind_port, int allow_reuse_port) {
     int ret;
@@ -16,8 +16,11 @@ int server__socket_setup(int* sock_fd, const char* bind_addr, u16 bind_port, int
     // Create new socket.
     *sock_fd = socket(AF_INET, SOCK_STREAM, 0);
 
-    if (*sock_fd < 0)
+    if (*sock_fd < 0) {
+        ERR_SET(1, "Failed to create socket: %s (%d)",strerror(errno), errno);
+
         return 1;
+    }
 
     // Allow reuse of address.
     int opt = 1;
@@ -34,7 +37,9 @@ int server__socket_setup(int* sock_fd, const char* bind_addr, u16 bind_port, int
     if (inet_pton(AF_INET, bind_addr, &in) != 1) {
         close (*sock_fd);
 
-        return 2;
+        ERR_SET(2, "Failed to convert bind address to decimal: %s (%d)", strerror(errno), errno);
+
+        return 1;
     }
 
     // Generate socket information for binding.
@@ -47,14 +52,18 @@ int server__socket_setup(int* sock_fd, const char* bind_addr, u16 bind_port, int
     if (bind(*sock_fd, (struct sockaddr*)&sin, sizeof(sin)) != 0) {
         close(*sock_fd);
 
-        return 3;
+        ERR_SET(3, "Failed to bind socket: %s (%d)", strerror(errno), errno);
+
+        return 1;
     }
 
     // Listen on socket.
     if (listen(*sock_fd, SOMAXCONN) != 0) {
         close(*sock_fd);
 
-        return 4;
+        ERR_SET(4, "Failed to listen on socket: %s (%d)", strerror(errno), errno);
+
+        return 1;
     }
 
     return 0;

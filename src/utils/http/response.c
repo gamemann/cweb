@@ -15,11 +15,12 @@ int utils__http_response_header_parse(http_response_t* res, char* line) {
 /**
  * Generates a plain HTTP response.
  * 
- * @param res A pointer to the HTTP response.
+ * @param res The HTTP response.
+ * @param buffer The buffer to st ore the raw HTTP response text in.
  * 
- * @return A character pointer to the plain HTTP response or NULL on error.
+ * @return 0 on success or 1 on error.
  */
-char* utils__http_response_write(http_response_t* res) {
+int utils__http_response_write(http_response_t* res, char** buffer) {
     // We need to determine the full length of the response.
     size_t len = 0;
 
@@ -43,14 +44,17 @@ char* utils__http_response_write(http_response_t* res) {
     // Null terminator.
     len += 1;
 
-    char *buffer = malloc(len);
+    *buffer = malloc(len);
 
-    if (!buffer)
-        return NULL;
+    if (!*buffer) {
+        ERR_SET(1, "Failed to allocate buffer.");
+
+        return 1;
+    }
 
     size_t off = 0;
 
-    off = snprintf(buffer + off, len - off, "%s %d %s\r\n", res->version, res->code, res->msg);
+    off = snprintf(*buffer + off, len - off, "%s %d %s\r\n", res->version, res->code, res->msg);
 
     for (int i = 0; i < res->headers_cnt; i++) {
         http_header_t *t = &res->headers[i];
@@ -58,18 +62,18 @@ char* utils__http_response_write(http_response_t* res) {
         if (!t->value)
             continue;
         
-        off += snprintf(buffer + off, len - off, "%s: %s\r\n", t->name, t->value);
+        off += snprintf(*buffer + off, len - off, "%s: %s\r\n", t->name, t->value);
     }
 
-    off += snprintf(buffer + off, len - off, "\r\n");
+    off += snprintf(*buffer + off, len - off, "\r\n");
 
     if (res->body) {
         size_t body_len = strlen(res->body);
-        memcpy(buffer + off, res->body, body_len);
+        memcpy(*buffer + off, res->body, body_len);
         off += body_len;
     }
 
-    buffer[off] = '\0';
+    (*buffer)[off] = '\0';
 
-    return buffer;
+    return 0;
 }

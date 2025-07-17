@@ -3,6 +3,8 @@
 #include <utils/constants.h>
 #include <utils/int_types.h>
 
+#include <utils/error/error.h>
+
 #include <utils/http/common.h>
 #include <utils/http/request.h>
 #include <utils/http/response.h>
@@ -11,6 +13,7 @@
 
 #include <cweb/fs/web.h>
 #include <cweb/server/socket.h>
+#include <cweb/logger/logger.h>
 
 #include <sys/socket.h>
 #include <netinet/in.h>

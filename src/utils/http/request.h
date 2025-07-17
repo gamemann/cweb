@@ -24,4 +24,4 @@ struct http_request {
 int utils__http_request_parse_info(http_request_t* req, char* line);
 int utils__http_request_header_parse(http_request_t* req, char* line);
 int utils__http_request_parse(http_request_t* req, char* buffer);
-char* utils__http_request_write(http_request_t* req);
+int utils__http_request_write(http_request_t* req, char** buffer);

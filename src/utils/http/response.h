@@ -6,6 +6,8 @@
 #include <utils/string/split.h>
 #include <utils/string/trim.h>
 
+#include <utils/error/error.h>
+
 #include <utils/http/common.h>
 
 #include <string.h>
@@ -22,4 +24,4 @@ struct http_response {
 } typedef http_response_t;
 
 int utils__http_response_header_parse(http_response_t* res, char* line);
-char* utils__http_response_write(http_response_t* res);
+int utils__http_response_write(http_response_t* res, char** buffer);

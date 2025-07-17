@@ -9,6 +9,7 @@
 
 #include <utils/http/common.h>
 #include <utils/http/request.h>
+#include <utils/error/error.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>

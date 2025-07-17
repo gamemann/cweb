@@ -9,18 +9,15 @@ int global_sock_fd = -1;
  * @param ctx A pointer to the context.
  * @param threads The amount of threads to setup.
  * 
- * @return 0 on success or value of server mode setup.
+ * @return 0 on success or 1 on error.
  */
 int server__setup(ctx_t* ctx, int threads) {
     int ret;
 
     // Check if we need to create a global socket.
     if (ctx->cfg->thread_type == THREAD_TYPE_GLOBAL_SOCK) {
-        if ((ret = server__socket_setup(&global_sock_fd, ctx->cfg->bind_addr, ctx->cfg->bind_port, 1)) != 0) {
-            logger__log(ctx->cfg, LVL_FATAL, "Failed to create global socket when setting up web server (%d)", ret);
-
+        if (server__socket_setup(&global_sock_fd, ctx->cfg->bind_addr, ctx->cfg->bind_port, 1))
             return 1;
-        }
     }
 
     // Create threads that will be processing requests.
@@ -28,8 +25,11 @@ int server__setup(ctx_t* ctx, int threads) {
         // Create thread context.
         thread_ctx_t *tctx = malloc(sizeof(thread_ctx_t));
 
-        if (!tctx)
-            return 5;
+        if (!tctx) {
+            ERR_SET(2, "Failed to allocate thread context on thread #%d.", i + 1);
+
+            return 1;
+        }
 
         tctx->id = i + 1;
         tctx->ctx = ctx;

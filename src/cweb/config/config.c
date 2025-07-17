@@ -31,19 +31,17 @@ void cfg__defaults(config_t* cfg) {
  * @return 0 on success or error from utils__read_file() or cfg__parse().
  */
 int cfg__load(config_t* cfg, const char* cfg_path, int load_defaults) {
-    int ret;
-
     // Check for defaults.
     if (load_defaults)
         cfg__defaults(cfg);
 
     char *buffer = NULL;
 
-    if ((ret = utils__read_file(cfg_path, &buffer)) != 0)
-        return ret;
+    if (utils__read_file(cfg_path, &buffer))
+        return 1;
 
-    if ((ret = cfg__parse(cfg, buffer)) != 0)
-        return ret;
+    if (cfg__parse(cfg, buffer))
+        return 1;
 
     free(buffer);
 
@@ -56,7 +54,7 @@ int cfg__load(config_t* cfg, const char* cfg_path, int load_defaults) {
  * @param cfg A pointer to the config.
  * @param data The JSON data to parse.
  * 
- * @return 0 on success or 1 if json_tokener_parse() fails.
+ * @return 0 on success or 1 on error.
  */
 int cfg__parse(config_t* cfg, const char* data) {
     json_object *root, *obj;
@@ -64,8 +62,11 @@ int cfg__parse(config_t* cfg, const char* data) {
     // Load root JSON contents.
     root = json_tokener_parse(data);
 
-    if (!root)
+    if (!root) {
+        ERR_SET(1, "Failed to parse JSON.");
+        
         return 1;
+    }
 
     // Retrieve log level.
     json_object *log_lvl = json_object_object_get(root, "log_lvl");

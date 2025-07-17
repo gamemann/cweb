@@ -44,8 +44,11 @@ const char* utils__http_header_get(http_header_t* headers, int header_cnt, const
  * @return 0 on success or 1 on error.
  */
 int utils__http_header_add(http_header_t* headers, int* header_cnt, const char* name, const char* value) {
-    if (*header_cnt >= MAX_HEADERS)
+    if (*header_cnt >= MAX_HEADERS) {
+        ERR_SET(1, "Header count exceeds maximum headers (%d > %d)", *header_cnt, MAX_HEADERS);
+
         return 1;
+    }
 
     http_header_t *header = &headers[*header_cnt];
 
@@ -65,21 +68,27 @@ int utils__http_header_add(http_header_t* headers, int* header_cnt, const char* 
  * @param header_cnt A pointer to the header count.
  * @param line The raw line.
  * 
- * @return 0 on success, 1 on line_cpy error, or 2 when colon doesn't exist in line. Otherwise, return value of utils__http_header_add().
+ * @return 0 on success or 1 on error.
  */
 int utils__http_header_parse_raw(http_header_t* headers, int* header_cnt, char* line) {
     // We need to make another copy.
     char *line_cpy = strdup(line);
 
-    if (!line_cpy)
+    if (!line_cpy) {
+        ERR_SET(1, "Failed to copy line.");
+
         return 1;
+    }
 
     char *save_ptr;
     char *ptr = strtok_r(line_cpy, ":", &save_ptr);
 
     // Make sure a colon exists.
-    if (ptr == NULL)
-        return 2;
+    if (ptr == NULL) {
+        ERR_SET(2, "Malformed header (colon is missing?): %s", line_cpy);
+
+        return 1;
+    }
 
     // Retrieve header name.
     char name[MAX_NAME_LEN];

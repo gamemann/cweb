@@ -6,13 +6,16 @@
  * @param path The path/file to read.
  * @param buffer A pointer to pointer of the buffer.
  * 
- * @return 0 on success. 1 on fopen() error. 2 on invalid file size. 3 on buffer allocation error.
+ * @return 0 on success or 1 on error.
  */
 int utils__read_file(const char* path, char** buffer) {
     FILE *fp = fopen(path, "r");
 
-    if (!fp)
+    if (!fp) {
+        ERR_SET(2, "Failed to open file: %s (%d).", strerror(errno), errno);
+
         return 1;
+    }
 
     fseek(fp, 0, SEEK_END);
     ssize_t file_sz = ftell(fp);
@@ -21,7 +24,9 @@ int utils__read_file(const char* path, char** buffer) {
     if (file_sz <= 0) {
         fclose(fp);
 
-        return 2;
+        ERR_SET(2, "File size is invalid.");
+
+        return 1;
     }
 
     *buffer = malloc(file_sz + 1);
@@ -29,7 +34,9 @@ int utils__read_file(const char* path, char** buffer) {
     if (*buffer == NULL) {
         fclose(fp);
 
-        return 3;
+        ERR_SET(3, "Failed to allocate buffer.");
+
+        return 1;
     }
 
     size_t r = fread(*buffer, 1, file_sz, fp);
@@ -53,6 +60,8 @@ int utils__file_exists(const char* path) {
 
     if (fp) {
         fclose(fp);
+
+        ERR_SET(1, "Failed to open file '%s': %s (%d)", path, strerror(errno), errno);
 
         return 1;
     }

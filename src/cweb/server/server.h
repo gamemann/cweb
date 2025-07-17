@@ -3,8 +3,11 @@
 #include <utils/constants.h>
 #include <utils/int_types.h>
 
+#include <utils/error/error.h>
+
 #include <cweb/server/thread.h>
 #include <cweb/server/socket.h>
+#include <cweb/logger/logger.h>
 
 #include <sys/socket.h>
 #include <netinet/in.h>
