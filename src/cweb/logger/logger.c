@@ -88,7 +88,7 @@ int logger__log_raw(log_level_t lvl, log_level_t req_lvl, const char* log_path, 
         FILE *log_file = fopen(log_path, "a");
 
         if (!log_file) {
-            ERR_SET(2, "Failed to open log path '%s': %s (%d)", log_path, strerror(errno), errno);
+            ERR_SET(2, "Failed to open log path '%s' (%d): %s", log_path, errno, strerror(errno));
 
             return 1;
         }

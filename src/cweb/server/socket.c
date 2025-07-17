@@ -17,7 +17,7 @@ int server__socket_setup(int* sock_fd, const char* bind_addr, u16 bind_port, int
     *sock_fd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (*sock_fd < 0) {
-        ERR_SET(1, "Failed to create socket: %s (%d)",strerror(errno), errno);
+        ERR_SET(1, "Failed to create socket (%d): %s", errno, strerror(errno));
 
         return 1;
     }
@@ -37,7 +37,7 @@ int server__socket_setup(int* sock_fd, const char* bind_addr, u16 bind_port, int
     if (inet_pton(AF_INET, bind_addr, &in) != 1) {
         close (*sock_fd);
 
-        ERR_SET(2, "Failed to convert bind address to decimal: %s (%d)", strerror(errno), errno);
+        ERR_SET(2, "Failed to convert bind address to decimal (%d): %s", errno, strerror(errno));
 
         return 1;
     }
@@ -52,7 +52,7 @@ int server__socket_setup(int* sock_fd, const char* bind_addr, u16 bind_port, int
     if (bind(*sock_fd, (struct sockaddr*)&sin, sizeof(sin)) != 0) {
         close(*sock_fd);
 
-        ERR_SET(3, "Failed to bind socket: %s (%d)", strerror(errno), errno);
+        ERR_SET(3, "Failed to bind socket (%d): %s", errno, strerror(errno));
 
         return 1;
     }
@@ -61,7 +61,7 @@ int server__socket_setup(int* sock_fd, const char* bind_addr, u16 bind_port, int
     if (listen(*sock_fd, SOMAXCONN) != 0) {
         close(*sock_fd);
 
-        ERR_SET(4, "Failed to listen on socket: %s (%d)", strerror(errno), errno);
+        ERR_SET(4, "Failed to listen on socket (%d): %s", errno, strerror(errno));
 
         return 1;
     }

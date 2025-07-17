@@ -12,7 +12,7 @@ int utils__read_file(const char* path, char** buffer) {
     FILE *fp = fopen(path, "r");
 
     if (!fp) {
-        ERR_SET(2, "Failed to open file: %s (%d).", strerror(errno), errno);
+        ERR_SET(2, "Failed to open file (%d): %s", errno, strerror(errno));
 
         return 1;
     }
@@ -61,7 +61,7 @@ int utils__file_exists(const char* path) {
     if (fp) {
         fclose(fp);
 
-        ERR_SET(1, "Failed to open file '%s': %s (%d)", path, strerror(errno), errno);
+        ERR_SET(1, "Failed to open file '%s' (%d): %s", path, errno, strerror(errno));
 
         return 1;
     }
