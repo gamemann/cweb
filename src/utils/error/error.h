@@ -10,6 +10,8 @@
 #include <stdarg.h>
 #include <unistd.h>
 
+#include <pthread.h>
+
 #define ERR_MSG_MAX_LEN 1024
 
 #define ERR_SET(code, msg, ...) utils__error_set((code), __func__, (msg), ##__VA_ARGS__)

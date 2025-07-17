@@ -1,6 +1,6 @@
 #include "error.h"
 
-error_ctx_t err_ctx = {0};
+__thread error_ctx_t err_ctx = {0};
 
 /**
  * Sets a custom error.
