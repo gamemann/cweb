@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <signal.h>
+#include <string.h>
+#include <time.h>
 
 #include <utils/constants.h>
 #include <utils/int_types.h>
@@ -12,10 +15,6 @@
 #include <cweb/config/config.h>
 #include <cweb/logger/logger.h>
 #include <cweb/server/server.h>
-
-#include <signal.h>
-
-#include <time.h>
 
 int cont = 1;
 
@@ -51,27 +50,33 @@ int main(int argc, char** argv) {
     }
 
     // Load config.
-    config_t cfg = {0};
+    config_t *cfg = malloc(sizeof(config_t));
 
-    if ((ret = cfg__load(&cfg, cli.cfg_path, 1)) != 0) {
-        error_ctx_t *err = utils__error_ctx();
-
-        logger__log(&cfg, LVL_FATAL, "Failed to load config '%s': %s (%d).", cli.cfg_path, err->msg, err->code);
+    if (!cfg) {
+        fprintf(stderr, "Failed to allocate memory for config.\n");
 
         return EXIT_FAILURE;
     }
 
-    logger__log(&cfg, LVL_NOTICE, "Config loaded...");
+    if ((ret = cfg__load(cfg, cli.cfg_path, 1)) != 0) {
+        error_ctx_t *err = utils__error_ctx();
+
+        logger__log(cfg, LVL_FATAL, "Failed to load config '%s': %s (%d).", cli.cfg_path, err->msg, err->code);
+
+        return EXIT_FAILURE;
+    }
+
+    logger__log(cfg, LVL_NOTICE, "Config loaded...");
 
     // Check for printing config.
     if (cli.list) {
-        cfg__print(&cfg);
+        cfg__print(cfg);
 
         return EXIT_SUCCESS;
     }
 
     // Retrieve thread count.
-    int threads = cfg.threads;
+    int threads = cfg->threads;
 
     // If below 1 (usually not specified), retrieve amount of threads from host.
     if (threads < 1)
@@ -80,15 +85,15 @@ int main(int argc, char** argv) {
     // Create context.
     ctx_t ctx = {0};
     ctx.cli = &cli;
-    ctx.cfg = &cfg;
+    ctx.cfg = cfg;
 
-    logger__log(&cfg, LVL_INFO, "Setting up web server with %d threads...", threads);
+    logger__log(cfg, LVL_INFO, "Setting up web server with %d threads...", threads);
 
     // Spin up web server.
     if ((ret = server__setup(&ctx, threads)) != 0) {
         error_ctx_t *err = utils__error_ctx();
 
-        logger__log(&cfg, LVL_FATAL, "Failed to setup web server: %s (%d)", err->msg, err->code);
+        logger__log(cfg, LVL_FATAL, "Failed to setup web server: %s (%d)", err->msg, err->code);
 
         return EXIT_FAILURE;
     }
@@ -110,7 +115,7 @@ int main(int argc, char** argv) {
             time_t cur_time = time(NULL);
 
             if (cur_time > end_time) {
-                logger__log(&cfg, LVL_NOTICE, "Exceeded %d seconds of runtime...", cli.time);
+                logger__log(cfg, LVL_NOTICE, "Exceeded %d seconds of runtime...", cli.time);
 
                 break;
             }
@@ -119,16 +124,19 @@ int main(int argc, char** argv) {
         sleep(1);
     }
 
-    logger__log(&cfg, LVL_NOTICE, "Found shutdown signal. Shutting down web server...");
+    logger__log(cfg, LVL_NOTICE, "Found shutdown signal. Shutting down web server...");
 
     // Attempt to shut down web server.
     if ((ret = server__shutdown(threads)) != 0) {
-        logger__log(&cfg, LVL_ERROR, "Failed to shutdown all web server threads: %d.", ret);
+        logger__log(cfg, LVL_ERROR, "Failed to shutdown all web server threads: %d.", ret);
 
         return EXIT_FAILURE;
     }
 
-    logger__log(&cfg, LVL_INFO, "Successfully shut down web server. Bye!");
+    logger__log(cfg, LVL_INFO, "Successfully shut down web server. Bye!");
+
+    // Free config.
+    cfg__close(&cfg);
     
     return EXIT_SUCCESS;
 }

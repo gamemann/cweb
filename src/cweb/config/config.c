@@ -10,15 +10,15 @@
  * @return void
  */
 void cfg__defaults(config_t* cfg) {
-    strncpy(cfg->bind_addr, "127.0.0.1", sizeof(cfg->bind_addr));
+    utils__ptr_set_str(&cfg->bind_addr, "0.0.0.0");
     cfg->bind_port = 80;
 
     cfg->log_lvl = LVL_NOTICE;
 
-    utils__str_copy(cfg->log_file, "/var/log/cweb.log", sizeof(cfg->log_file));
+    utils__ptr_set_str(&cfg->log_file, "/var/log/cweb.log");
 
-    utils__str_copy(cfg->server_name, "CWeb", sizeof(cfg->server_name));
-    utils__str_copy(cfg->public_dir, "./public", sizeof(cfg->public_dir));
+    utils__ptr_set_str(&cfg->server_name, "CWeb");
+    utils__ptr_set_str(&cfg->public_dir, "./public");
 }
 
 /**
@@ -78,13 +78,13 @@ int cfg__parse(config_t* cfg, const char* data) {
     json_object *log_file = json_object_object_get(root, "log_file");
 
     if (log_file)
-        utils__str_copy(cfg->log_file, json_object_get_string(log_file), sizeof(cfg->log_file));
+        utils__ptr_set_str(&cfg->log_file, json_object_get_string(log_file));
 
     // Retrieve bind address.
     json_object *bind_addr = json_object_object_get(root, "bind_addr");
 
     if (bind_addr)
-        utils__str_copy(cfg->bind_addr, json_object_get_string(bind_addr), sizeof(cfg->bind_addr));
+        utils__ptr_set_str(&cfg->bind_addr, json_object_get_string(bind_addr));
 
     // Retrieve bind port.
     json_object *bind_port = json_object_object_get(root, "bind_port");
@@ -96,13 +96,13 @@ int cfg__parse(config_t* cfg, const char* data) {
     json_object *server_name = json_object_object_get(root, "server_name");
 
     if (server_name)
-        utils__str_copy(cfg->server_name, json_object_get_string(server_name), sizeof(cfg->server_name));
+        utils__ptr_set_str(&cfg->server_name, json_object_get_string(server_name));
 
     // Retrieve public HTML directory.
     json_object *public_dir = json_object_object_get(root, "public_dir");
 
     if (public_dir)
-        utils__str_copy(cfg->public_dir, json_object_get_string(public_dir), sizeof(cfg->public_dir));
+        utils__ptr_set_str(&cfg->public_dir, json_object_get_string(public_dir));
 
     // Retrieve threads count.
     json_object *threads = json_object_object_get(root, "threads");
@@ -116,65 +116,25 @@ int cfg__parse(config_t* cfg, const char* data) {
     if (thread_type)
         cfg->thread_type = (thread_type_t)json_object_get_int(thread_type);
 
-    // Retrieve allowed hosts.
-    cfg->allowed_hosts_cnt = 0;
+    return 0;
+}
 
-    json_object *allowed_hosts = json_object_object_get(root, "allowed_hosts");
+/**
+ * Closes a config (frees all pointers including itself).
+ * @param cfg The config.
+ * 
+ * @return 0 on success or 1 on error.
+ */
+int cfg__close(config_t** cfg) {
+    if (!cfg || !*cfg) {
+        ERR_SET(1, "Config already not allocated.");
 
-    if (allowed_hosts) {
-        // Handle array.
-        if (json_object_get_type(allowed_hosts) == json_type_array) {
-            int len = json_object_array_length(allowed_hosts);
-
-            json_object *host;
-
-            for (int i = 0; i < len; i++) {
-                if (i >= MAX_ALLOWED_HOSTS)
-                    break;
-                
-                host = json_object_array_get_idx(allowed_hosts, i);
-
-                utils__str_copy(cfg->allowed_hosts[i], json_object_get_string(host), sizeof(cfg->allowed_hosts[i]));
-
-                cfg->allowed_hosts_cnt++;
-            }
-        } else {
-            // Treat as a single string.
-            utils__str_copy(cfg->allowed_hosts[0], json_object_get_string(allowed_hosts), sizeof(cfg->allowed_hosts[0]));
-
-            cfg->allowed_hosts_cnt = 1;
-        }
+        return 1;
     }
 
-    // Retrieve allowed user agents.
-    cfg->allowed_user_agents_cnt = 0;
+    utils__ptr_free((void**) &(*cfg)->bind_addr);
 
-    json_object *allowed_user_agents = json_object_object_get(root, "allowed_user_agents");
-
-    if (allowed_user_agents) {
-        // Handle array.
-        if (json_object_get_type(allowed_user_agents) == json_type_array) {
-            int len = json_object_array_length(allowed_user_agents);
-
-            json_object *ua;
-
-            for (int i = 0; i < len; i++) {
-                if (i >= MAX_ALLOWED_USER_AGENTS)
-                    break;
-
-                ua = json_object_array_get_idx(allowed_user_agents, i);
-
-                utils__str_copy(cfg->allowed_user_agents[i], json_object_get_string(ua), sizeof(cfg->allowed_user_agents[i]));
-
-                cfg->allowed_user_agents_cnt++;
-            }
-        } else {
-            // Treat as a single string.
-            utils__str_copy(cfg->allowed_user_agents[0], json_object_get_string(allowed_user_agents), sizeof(cfg->allowed_user_agents[0]));
-
-            cfg->allowed_user_agents_cnt = 1;
-        }
-    }
+    //utils__ptr_free((void**) cfg);
 
     return 0;
 }
@@ -192,11 +152,11 @@ void cfg__print(config_t* cfg) {
     const char *log_lvl_str = logger__get_lvl_str((log_level_t)cfg->log_lvl);
     printf("Log Level: %s (%d)\n", log_lvl_str, cfg->log_lvl);
 
-    printf("Log File: %s\n", strlen(cfg->log_file) > 0 ? cfg->log_file : "N/A");
-    printf("Bind Address: %s\n", cfg->bind_addr);
+    printf("Log File: %s\n", cfg->log_file ? cfg->log_file : "N/A");
+    printf("Bind Address: %s\n", cfg->bind_addr ? cfg->bind_addr : "N/A");
     printf("Bind Port: %d\n", cfg->bind_port);
-    printf("Server Name: %s\n", cfg->server_name);
-    printf("Public Directory: %s\n", cfg->public_dir);
+    printf("Server Name: %s\n", cfg->server_name ? cfg->server_name : "N/A");
+    printf("Public Directory: %s\n", cfg->public_dir ? cfg->public_dir : "N/A");
     printf("Threads: %d (0 = auto)\n", cfg->threads);
     
     char *thread_type_str = "Global Socket";
@@ -205,28 +165,4 @@ void cfg__print(config_t* cfg) {
         thread_type_str = "Per Socket";
 
     printf("Thread Type: %s\n", thread_type_str);
-
-    if (cfg->allowed_hosts_cnt > 0) {
-        printf("Allowed Hosts:\n");
-
-        char *host;
-
-        for (int i = 0; i < cfg->allowed_hosts_cnt; i++) {
-            host = cfg->allowed_hosts[i];
-
-            printf("\t- %s\n", host);
-        }
-    }
-
-    if (cfg->allowed_user_agents_cnt > 0) {
-        printf("Allowed User Agents:\n");
-
-        char *ua;
-
-        for (int i = 0; i < cfg->allowed_user_agents_cnt; i++) {
-            ua = cfg->allowed_user_agents[i];
-
-            printf("\t- %s\n", ua);
-        }
-    }
 }
