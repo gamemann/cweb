@@ -60,22 +60,24 @@ COMMON_INCS = -I $(SRC_DIR)
 # General flags.
 FLAGS = -O2 -g
 
+DEP_FLAGS = -MMD -MP
+
 all: cweb_prog stress_prog
 
 $(UTILS_BUILD_DIR_OBJ)/%.o: $(UTILS_SRC_DIR)/%.c
 	@mkdir -p $(dir $@)
-	$(CC) $(FLAGS) -c $(COMMON_INCS) -o $@ $<
+	$(CC) $(FLAGS) $(DEP_FLAGS) -c $(COMMON_INCS) -o $@ $<
 
 $(CWEB_BUILD_DIR_OBJ)/%.o: $(CWEB_SRC_DIR)/%.c
 	@mkdir -p $(dir $@)
-	$(CC) $(FLAGS) -c $(COMMON_INCS) -o $@ $<
+	$(CC) $(FLAGS) $(DEP_FLAGS) -c $(COMMON_INCS) -o $@ $<
 
 cweb_prog: $(UTILS_OBJS) $(CWEB_OBJS)
 	$(CC) $(FLAGS) $(COMMON_INCS) -lpthread -ljson-c $(CWEB_OBJS) -o $(CWEB_BUILD_DIR)/$(CWEB_PROG_OUT) $(CWEB_SRC_DIR)/$(CWEB_PROG_SRC)
 
 $(STRESS_BUILD_DIR_OBJ)/%.o: $(STRESS_SRC_DIR)/%.c
 	@mkdir -p $(dir $@)
-	$(CC) $(FLAGS) -c $(COMMON_INCS) -o $@ $<
+	$(CC) $(FLAGS) $(DEP_FLAGS) -c $(COMMON_INCS) -o $@ $<
 
 stress_prog: $(UTILS_OBJS) $(STRESS_OBJS)
 	$(CC) $(FLAGS) $(COMMON_INCS) $(STRESS_OBJS) -o $(STRESS_BUILD_DIR)/$(STRESS_PROG_OUT) $(STRESS_SRC_DIR)/$(STRESS_PROG_SRC)
@@ -102,3 +104,7 @@ clean:
 	rm -f $(STRESS_BUILD_DIR)/cweb-stress
 clean-deep:
 	rm -rf $(BUILD_DIR)
+
+.PHONY: all clean clean-deep install json-c json-c-install json-c-clean
+
+-include $(UTILS_OBJS:.o=.d) $(CWEB_OBJS:.o=.d) $(STRESS_OBJS:.o=.d)
