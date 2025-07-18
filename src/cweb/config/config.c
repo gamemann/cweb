@@ -132,9 +132,72 @@ int cfg__close(config_t** cfg) {
         return 1;
     }
 
+    // Free top-level strings.
     utils__ptr_free((void**) &(*cfg)->bind_addr);
+    utils__ptr_free((void**) &(*cfg)->server_name);
+    utils__ptr_free((void**) &(*cfg)->public_dir);
 
-    //utils__ptr_free((void**) cfg);
+    // Free sites.
+    if ((*cfg)->sites) {
+
+        if ((*cfg)->sites_cnt > 0) {
+            for (int i = 0; i < (*cfg)->sites_cnt; i++) {
+                cfg_site_t *site = (*cfg)->sites[i];
+
+                // Check domains.
+                if (site->domains) {
+                    if (site->domains_cnt > 0) {
+                        for (int j = 0; j < site->domains_cnt; j++) {
+                            char* domain = site->domains[j];
+
+                            utils__ptr_free((void**)&domain);
+                        }
+                    }
+
+                    utils__ptr_free((void**)site->domains);
+                }
+
+                // Check routes.
+                if (site->routes) {
+                    if (site->routes_cnt > 0) {
+                        for (int j = 0; j < site->routes_cnt; j++) {
+                            cfg_route_t* route = site->routes[j];
+
+                            // Free strings.
+                            utils__ptr_free((void**)&route->serve_file);
+                            utils__ptr_free((void**)&route->serve_dir);
+                            utils__ptr_free((void**)&route->serve_type);
+
+                            utils__ptr_free((void**)&route->proxy_addr);
+
+                            // Check proxy headers.
+                            if (route->proxy_headers) {
+                                if (route->proxy_headers_cnt > 0) {
+                                    for (int x = 0; x < route->proxy_headers_cnt; x++) {
+                                        char* hdr = route->proxy_headers[x];
+
+                                        utils__ptr_free((void**)&hdr);
+                                    }
+                                }
+
+                                utils__ptr_free((void**)route->proxy_headers);
+                            }
+
+                            utils__ptr_free((void**)&route);
+                        }
+                    }
+                    utils__ptr_free((void**)site->routes);
+                }
+
+                utils__ptr_free((void**)&site);
+            }
+        }
+
+        utils__ptr_free((void**) &(*cfg)->sites);
+    }
+
+    // Free config itself.
+    utils__ptr_free((void**) cfg);
 
     return 0;
 }

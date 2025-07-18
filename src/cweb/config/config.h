@@ -37,7 +37,10 @@ struct cfg_route {
 
 struct cfg_site {
     char** domains;
+    int domains_cnt;
+
     cfg_route_t** routes;
+    int routes_cnt;
 } typedef cfg_site_t;
 
 struct config {
