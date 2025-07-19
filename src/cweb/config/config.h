@@ -21,18 +21,28 @@ enum thread_type {
     THREAD_TYPE_PER_SOCK
 } typedef thread_type_t;
 
+struct cfg_route_proxy {
+    char* addr;
+
+    char** hdrs;
+    int hdrs_cnt;
+} typedef cfg_route_proxy_t;
+
 struct cfg_route {
+    char* route_regex;
+    char* route_plain;
+
     char* serve_file;
     char* serve_dir;
     char* serve_type;
 
-    char* proxy_addr;
+    char** res_hdrs;
+    int res_hdrs_cnt;
 
-    char** proxy_headers;
-    int proxy_headers_cnt;
+    cfg_route_proxy_t proxy;
 
-    char allowed_user_agents;
-    int allowed_user_agents_cnt;
+    char** ua;
+    int ua_cnt;
 } typedef cfg_route_t;
 
 struct cfg_site {

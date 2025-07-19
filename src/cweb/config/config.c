@@ -116,6 +116,77 @@ int cfg__parse(config_t* cfg, const char* data) {
     if (thread_type)
         cfg->thread_type = (thread_type_t)json_object_get_int(thread_type);
 
+    // Start sites.
+    json_object *sites = json_object_object_get(root, "sites");
+
+    if (sites && json_object_get_type(sites) == json_type_array) {
+        // Allocate buffer for sites.
+        // Just use sizeof(cfg_site_t)?????????
+        cfg->sites = malloc(MAX_SITES * sizeof(cfg_site_t));
+
+        if (!cfg->sites) {
+            ERR_SET(2, "Failed to allocate buffer for sites.");
+
+            return 1;
+        }
+
+        int sites_len = json_object_array_length(sites);
+
+        for (int i = 0; i < sites_len; i++) {
+            json_object *site = json_object_array_get_idx(sites, i);
+
+            // Allocate new site buffer.
+            cfg_site_t *new_site = malloc(sizeof(cfg_site_t));
+
+            if (!new_site) {
+                ERR_SET(3, "Failed to allocate buffer for new site.");
+
+                utils__ptr_free((void**)cfg->sites);
+
+                return 1;
+            }
+
+            // Load in domains.
+            json_object *domains = json_object_object_get(site, "domains");
+
+            if (domains) {
+                new_site->domains = malloc(MAX_DOMAINS * sizeof(char*));
+
+                if (!new_site->domains) {
+                    ERR_SET(4, "Failed to allocate buffer for domains.");
+
+                    return 1;
+                }
+
+                if (json_object_get_type(domains) == json_type_array) {
+                    int domains_len = json_object_array_length(domains);
+
+                    for (int j = 0; j < domains_len; j++) {
+                        json_object *domain = json_object_array_get_idx(domains, j);
+
+                        const char *domain_str = json_object_get_string(domain);
+
+                        if (!domain_str)
+                            continue;
+
+                        new_site->domains[j] = strdup(domain_str);
+                        new_site->domains_cnt++;
+                    }
+                }
+            }
+
+            // Load in routes.
+            json_object *routes = json_object_object_get(site, "routes");
+
+            if (routes && json_object_get_type(routes) == json_type_array) {
+
+            }
+
+            cfg->sites[i] = new_site;
+            cfg->sites_cnt++;
+        }
+    }
+
     return 0;
 }
 
@@ -168,19 +239,19 @@ int cfg__close(config_t** cfg) {
                             utils__ptr_free((void**)&route->serve_dir);
                             utils__ptr_free((void**)&route->serve_type);
 
-                            utils__ptr_free((void**)&route->proxy_addr);
+                            utils__ptr_free((void**)&route->proxy.addr);
 
                             // Check proxy headers.
-                            if (route->proxy_headers) {
-                                if (route->proxy_headers_cnt > 0) {
-                                    for (int x = 0; x < route->proxy_headers_cnt; x++) {
-                                        char* hdr = route->proxy_headers[x];
+                            if (route->proxy.hdrs) {
+                                if (route->proxy.hdrs_cnt > 0) {
+                                    for (int x = 0; x < route->proxy.hdrs_cnt; x++) {
+                                        char* hdr = route->proxy.hdrs[x];
 
                                         utils__ptr_free((void**)&hdr);
                                     }
                                 }
 
-                                utils__ptr_free((void**)route->proxy_headers);
+                                utils__ptr_free((void**)route->proxy.hdrs);
                             }
 
                             utils__ptr_free((void**)&route);
